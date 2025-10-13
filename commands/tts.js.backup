@@ -1,0 +1,94 @@
+const gTTS = require('gtts');
+const fs = require('fs');
+const path = require('path');
+const { promisify } = require('util');
+const { tmpdir } = require('os');
+const mkdirp = promisify(require('mkdirp'));
+const { createReadStream } = require('fs');
+
+async function ttsCommand(sock, chatId, text, message, language = 'en') {
+    if (!text) {
+        await sock.sendMessage(chatId, { 
+            text: '❌ Please provide the text for TTS conversion.\n\nExample: .tts Hello World',
+            contextInfo: {
+                forwardingScore: 1,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
+                    newsletterName: 'MAZARI TECH',
+                    serverMessageId: -1
+                }
+            }
+        });
+        return;
+    }
+
+    try {
+        // Use system temp directory with fallback
+        const tempDir = process.env.TEMP_DIR || tmpdir();
+        const fileName = `tts-${Date.now()}.mp3`;
+        const filePath = path.join(tempDir, fileName);
+
+        // Ensure temp directory exists
+        await mkdirp(tempDir);
+
+        // Create TTS with error handling
+        const gtts = new gTTS(text, language);
+        
+        // Convert callback to promise
+        await new Promise((resolve, reject) => {
+            gtts.save(filePath, (err) => {
+                if (err) reject(err);
+                else resolve();
+            });
+        });
+
+        // Wait for file to be fully written
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        // Convert file to buffer
+        const buffer = await fs.promises.readFile(filePath);
+
+        // Send audio file using buffer
+        await sock.sendMessage(chatId, {
+            audio: buffer,
+            mimetype: 'audio/mp4',
+            ptt: true, // This makes it play as voice note
+            contextInfo: {
+                forwardingScore: 1,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
+                    newsletterName: 'MAZARI TECH',
+                    serverMessageId: -1
+                }
+            }
+        }, { quoted: message });
+
+        // Clean up
+        try {
+            if (fs.existsSync(filePath)) {
+                fs.unlinkSync(filePath);
+            }
+        } catch (cleanupError) {
+            console.error('Cleanup error:', cleanupError);
+        }
+
+    } catch (error) {
+        console.error('TTS Error:', error);
+        await sock.sendMessage(chatId, { 
+            text: '❌ Error generating TTS audio. Please try again.',
+            contextInfo: {
+                forwardingScore: 1,
+                isForwarded: true,
+                forwardedNewsletterMessageInfo: {
+                    newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
+                    newsletterName: 'MAZARI TECH',
+                    serverMessageId: -1
+                }
+            }
+        });
+    }
+}
+
+module.exports = ttsCommand;

@@ -1,0 +1,29 @@
+{
+  "WO128N": {
+    "authDir": "D:\\MazariBot\\src\\sessions\\WO128N",
+    "created": "2025-10-12T09:41:50.874Z",
+    "phoneNumber": "+923232391033"
+  },
+  "VVNWNP": {
+    "authDir": "D:\\MazariBot\\src\\sessions\\VVNWNP",
+    "created": "2025-10-12T09:45:55.110Z",
+    "phoneNumber": "+923232391033"
+  },
+  "56WS1A": {
+    "authDir": "D:\\MazariBot\\src\\sessions\\pair_56WS1A",
+    "created": "2025-10-12T09:54:37.842Z",
+    "status": "pending"
+  },
+  "UEPQET": {
+    "authDir": "D:\\MazariBot\\src\\sessions\\qr_1760263228395",
+    "created": "2025-10-12T10:02:39.615Z",
+    "status": "pending",
+    "phoneNumber": "+923232391033"
+  },
+  "1P8XXM9": {
+    "authDir": "D:\\MazariBot\\src\\sessions\\pair_1P8XXM9",
+    "created": "2025-10-12T10:17:25.430Z",
+    "status": "pending",
+    "phoneNumber": "+923232391033"
+  }
+}

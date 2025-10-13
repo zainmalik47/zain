@@ -1,0 +1,189 @@
+const fs = require('fs');
+const path = require('path');
+
+// Initialize data file if it doesn't exist
+const dataFile = path.join(__dirname, '../data/autoreplies.json');
+if (!fs.existsSync(dataFile)) {
+    fs.writeFileSync(dataFile, JSON.stringify({ 
+        autoreplies: [
+            {
+                trigger: "assalamualaikum",
+                reply: "*_Waalikum Aslam_*"
+            }
+        ],
+        enabled: true
+    }, null, 2));
+}
+
+const channelInfo = {
+    contextInfo: {
+        forwardingScore: 1,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
+            newsletterName: 'MAZARI TECH',
+            serverMessageId: -1
+        }
+    }
+};
+
+// Command to manage auto-replies
+async function autoreplyCommand(sock, chatId, message, args) {
+    try {
+        // Read current data
+        const data = JSON.parse(fs.readFileSync(dataFile));
+
+        // If no arguments, show current auto-replies
+        if (!args || args.length === 0) {
+            const status = data.enabled ? 'enabled' : 'disabled';
+            let replyText = `🤖 *Auto-Reply System*\nStatus: ${status}\n\n*Current Auto-Replies:*\n`;
+            
+            if (data.autoreplies.length === 0) {
+                replyText += "No auto-replies configured.";
+            } else {
+                data.autoreplies.forEach((item, index) => {
+                    replyText += `${index + 1}. Trigger: "${item.trigger}"\n   Reply: "${item.reply}"\n`;
+                });
+            }
+            
+            replyText += "\n*Commands:*\n" +
+                        ".autoreply on - Enable system\n" +
+                        ".autoreply off - Disable system\n" +
+                        ".autoreply add <trigger>|<reply> - Add new auto-reply\n" +
+                        ".autoreply del <number> - Delete auto-reply\n" +
+                        ".autoreply list - Show all auto-replies";
+
+            await sock.sendMessage(chatId, { 
+                text: replyText,
+                ...channelInfo
+            }, { quoted: message });
+            return;
+        }
+
+        const command = args[0].toLowerCase();
+
+        switch(command) {
+            case 'on':
+                data.enabled = true;
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+                await sock.sendMessage(chatId, { 
+                    text: '✅ Auto-reply system enabled!',
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'off':
+                data.enabled = false;
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+                await sock.sendMessage(chatId, { 
+                    text: '❌ Auto-reply system disabled!',
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'add':
+                const input = args.slice(1).join(' ');
+                const [trigger, reply] = input.split('|').map(str => str.trim());
+                
+                if (!trigger || !reply) {
+                    await sock.sendMessage(chatId, { 
+                        text: '❌ Invalid format! Use: .autoreply add trigger|reply',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                data.autoreplies.push({ trigger, reply });
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+                
+                await sock.sendMessage(chatId, { 
+                    text: `✅ Added new auto-reply!\nTrigger: ${trigger}\nReply: ${reply}`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'del':
+                const index = parseInt(args[1]) - 1;
+                
+                if (isNaN(index) || index < 0 || index >= data.autoreplies.length) {
+                    await sock.sendMessage(chatId, { 
+                        text: '❌ Invalid number! Use .autoreply list to see available auto-replies.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                const removed = data.autoreplies.splice(index, 1)[0];
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+                
+                await sock.sendMessage(chatId, { 
+                    text: `✅ Removed auto-reply:\nTrigger: ${removed.trigger}\nReply: ${removed.reply}`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'list':
+                let listText = '*📝 Auto-Reply List:*\n\n';
+                
+                if (data.autoreplies.length === 0) {
+                    listText += 'No auto-replies configured.';
+                } else {
+                    data.autoreplies.forEach((item, index) => {
+                        listText += `${index + 1}. Trigger: "${item.trigger}"\n   Reply: "${item.reply}"\n\n`;
+                    });
+                }
+
+                await sock.sendMessage(chatId, { 
+                    text: listText,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            default:
+                await sock.sendMessage(chatId, { 
+                    text: '❌ Unknown command! Use .autoreply for help.',
+                    ...channelInfo
+                }, { quoted: message });
+        }
+    } catch (error) {
+        console.error('Error in autoreply command:', error);
+        await sock.sendMessage(chatId, { 
+            text: '❌ Error processing command.',
+            ...channelInfo
+        }, { quoted: message });
+    }
+}
+
+// Function to check and handle auto-replies
+async function handleAutoReply(sock, message) {
+    try {
+        // Read current data
+        const data = JSON.parse(fs.readFileSync(dataFile));
+        
+        // If system is disabled, return
+        if (!data.enabled) return;
+
+        const text = message.message?.conversation?.toLowerCase() ||
+                    message.message?.extendedTextMessage?.text?.toLowerCase() ||
+                    message.message?.imageMessage?.caption?.toLowerCase() ||
+                    '';
+
+        // Check each trigger
+        for (const item of data.autoreplies) {
+            if (text.includes(item.trigger.toLowerCase())) {
+                await sock.sendMessage(message.key.remoteJid, { 
+                    text: item.reply,
+                    ...channelInfo
+                }, { quoted: message });
+                break; // Only send first matching reply
+            }
+        }
+    } catch (error) {
+        console.error('Error in auto-reply handler:', error);
+    }
+}
+
+module.exports = {
+    autoreplyCommand,
+    handleAutoReply
+};

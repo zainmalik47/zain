@@ -1,0 +1,153 @@
+[3408:5172:1012/044002.665:VERBOSE1:webrtc_event_log_manager.cc(96)] WebRTC remote-bound event logging enabled.
+[3408:5172:1012/044002.683:VERBOSE1:pref_proxy_config_tracker_impl.cc(187)] 0000667000028900: set chrome proxy config service to 00006670000841C0
+[3408:1144:1012/044002.779:VERBOSE1:media_stream_manager.cc(1075)] MSM::InitializeMaybeAsync([this=000066700001E700])
+[3408:1144:1012/044002.780:VERBOSE1:media_stream_manager.cc(1075)] MDM::MediaDevicesManager()
+[3408:1144:1012/044002.780:VERBOSE1:media_stream_manager.cc(1075)] MSM::MediaStreamManager([this=000066700001E700]))
+[3408:5172:1012/044002.791:VERBOSE1:install_util.cc(217)] No existing Chrome install found.
+[3408:5172:1012/044002.817:WARNING:account_consistency_mode_manager.cc(70)] Desktop Identity Consistency cannot be enabled as no OAuth client ID and client secret have been configured.
+[3408:5172:1012/044002.817:VERBOSE1:account_consistency_mode_manager.cc(197)] Desktop Identity Consistency disabled as sign-in to Chrome is not allowed
+[3408:5172:1012/044002.829:VERBOSE1:pref_proxy_config_tracker_impl.cc(187)] 000066700002C500: set chrome proxy config service to 0000667000088600
+[3408:5172:1012/044002.831:VERBOSE1:account_consistency_mode_manager.cc(197)] Desktop Identity Consistency disabled as sign-in to Chrome is not allowed
+[3408:5172:1012/044002.832:VERBOSE1:mutable_profile_oauth2_token_service_delegate.cc(207)] MutablePO2TS::MutablePO2TS
+[3408:9188:1012/044002.834:VERBOSE1:simple_index_file.cc(600)] Simple Cache Index is being restored from disk.
+[3408:5172:1012/044002.834:VERBOSE1:device_event_log_impl.cc(217)] [04:40:02.836] Bluetooth: EVENT: bluetooth_api.cc:82 BluetoothAPI: 0000667000084E00
+[3408:5172:1012/044002.834:VERBOSE1:pref_proxy_config_tracker_impl.cc(187)] 000066700002CB00: set chrome proxy config service to 0000667000089080
+[3408:5172:1012/044002.841:VERBOSE1:bluetooth_low_energy_event_router.cc(258)] Initializing BluetoothLowEnergyEventRouter.
+[3408:5172:1012/044002.894:VERBOSE1:extension_service.cc(1464)] AddComponentExtension Web Store
+[3408:5172:1012/044002.894:VERBOSE1:extension_service.cc(1466)] Component extension Web Store (ahfgeienlihckogmohjhadlkjgocpleb) installing/upgrading from '' to 0.2
+[3408:5172:1012/044002.894:VERBOSE1:extension_service.cc(1464)] AddComponentExtension Chromium PDF Viewer
+[3408:5172:1012/044002.894:VERBOSE1:extension_service.cc(1466)] Component extension Chromium PDF Viewer (mhjfbmdgcfjbbpaeojofohoefgiehjai) installing/upgrading from '' to 1
+[3408:5172:1012/044002.900:VERBOSE1:account_consistency_mode_manager.cc(197)] Desktop Identity Consistency disabled as sign-in to Chrome is not allowed
+[3408:5172:1012/044002.900:VERBOSE1:account_reconcilor.cc(138)] AccountReconcilor::AccountReconcilor
+[3408:5172:1012/044002.900:VERBOSE1:account_reconcilor.cc(167)] AccountReconcilor::Initialize
+[3408:5172:1012/044002.902:VERBOSE1:on_device_head_suggest_component_installer.cc(56)] On Device Head Component will fetch model for locale: ENUS500000
+[3408:5172:1012/044002.902:VERBOSE1:trust_token_key_commitments_component_installer.cc(28)] Registering Trust Token Key Commitments component.
+[3408:5172:1012/044002.902:VERBOSE1:first_party_sets_component_installer.cc(207)] Registering First-Party Sets component.
+[3408:5172:1012/044002.902:VERBOSE1:file_type_policies_component_installer.cc(131)] Registering File Type Policies component.
+[3408:16468:1012/044002.902:VERBOSE1:component_installer.cc(285)] StartRegistration for First-Party Sets
+[3408:5172:1012/044002.902:VERBOSE1:hyphenation_component_installer.cc(150)] Registering Hyphenation component.
+[3408:5172:1012/044002.902:VERBOSE1:desktop_sharing_hub_component_installer.cc(142)] Registering Desktop Sharing Hub component.
+[3408:5172:1012/044002.902:VERBOSE1:url_param_classification_component_installer.cc(209)] Registering Url Param Classifications component.
+[3408:16468:1012/044002.902:VERBOSE1:component_installer.cc(285)] StartRegistration for pnacl
+[3408:9188:1012/044002.902:VERBOSE1:component_installer.cc(285)] StartRegistration for Subresource Filter Rules
+[3408:8660:1012/044002.902:VERBOSE1:component_installer.cc(285)] StartRegistration for OnDeviceHeadSuggest
+[3408:15236:1012/044002.902:VERBOSE1:component_installer.cc(285)] StartRegistration for Optimization Hints
+[3408:16468:1012/044002.906:VERBOSE1:component_installer.cc(285)] StartRegistration for Trust Token Key Commitments
+[3408:11732:1012/044002.906:VERBOSE1:component_installer.cc(285)] StartRegistration for Certificate Error Assistant
+[3408:9720:1012/044002.906:VERBOSE1:component_installer.cc(285)] StartRegistration for File Type Policies
+[3408:5172:1012/044002.906:WARNING:chrome_browser_main_win.cc(757)] Command line too long for RegisterApplicationRestart:  --allow-pre-commit-input --disable-accelerated-2d-canvas --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-blink-features=AutomationControlled --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=VizDisplayCompositor --disable-gpu --disable-hang-monitor --disable-ipc-flooding-protection --disable-plugins --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-setuid-sandbox --disable-sync --disable-web-security --enable-automation --enable-blink-features=IdleDetection --enable-features=NetworkServiceInProcess2 --enable-logging --export-tagged-pdf --file-url-path-alias="/gen=D:\MazariBot\node_modules\puppeteer-core\.local-chromium\win64-1045629\chrome-win\gen" --force-color-profile=srgb --metrics-recording-only --no-first-run --no-sandbox --password-store=basic --remote-debugging-port=0 --use-mock-keychain --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.67 Safari/537.36" --user-data-dir="D:\MazariBot\.wwebjs_auth\session-mazaribot" --v=1 --restore-last-session
+[3408:9188:1012/044002.906:VERBOSE1:component_installer.cc(285)] StartRegistration for CRLSet
+[3408:15236:1012/044002.907:VERBOSE1:component_installer.cc(285)] StartRegistration for Origin Trials
+[3408:8660:1012/044002.907:VERBOSE1:component_installer.cc(285)] StartRegistration for MEI Preload
+[3408:16468:1012/044002.907:VERBOSE1:component_installer.cc(285)] StartRegistration for PKI Metadata
+[3408:9720:1012/044002.907:VERBOSE1:component_installer.cc(285)] StartRegistration for Safety Tips
+[3408:8660:1012/044002.907:VERBOSE1:component_installer.cc(272)] Preinstalled component found for MEI Preload at D:\MazariBot\node_modules\puppeteer-core\.local-chromium\win64-1045629\chrome-win\MEIPreload with version 1.0.7.1652906823.
+[3408:5172:1012/044002.907:VERBOSE1:profile_manager.cc(1522)] AddKeepAlive(Default, kBrowserWindow). keep_alives=[kWaitingForFirstBrowserWindow (1), kBrowserWindow (1)]
+[3408:5172:1012/044002.907:VERBOSE1:profile_manager.cc(1576)] ClearFirstBrowserWindowKeepAlive(Default). keep_alives=[kBrowserWindow (1)]
+[3408:15236:1012/044002.908:VERBOSE1:component_installer.cc(285)] StartRegistration for Crowd Deny
+[3408:9188:1012/044002.908:VERBOSE1:component_installer.cc(285)] StartRegistration for Hyphenation
+[3408:16468:1012/044002.908:VERBOSE1:component_installer.cc(285)] StartRegistration for Desktop Sharing Hub
+[3408:8660:1012/044002.908:VERBOSE1:component_installer.cc(285)] StartRegistration for Zxcvbn Data Dictionaries
+[3408:9720:1012/044002.908:VERBOSE1:component_installer.cc(285)] StartRegistration for Autofill States Data
+[3408:15236:1012/044002.908:VERBOSE1:component_installer.cc(285)] StartRegistration for Url Param Classifications
+[3408:12440:1012/044002.908:VERBOSE1:component_installer.cc(285)] StartRegistration for Client Side Phishing Detection
+[3408:16528:1012/044002.935:VERBOSE1:token_service_table.cc(152)] Loaded tokens: result = 3 ; number of tokens loaded = 0
+[3408:16916:1012/044003.230:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: http://clients2.google.com/time/1/current?cup2key=6:zmackK7F5o_AJzuFhMBJlaZ0InDPiC-ShHxfx-oG23Q&cup2hreq=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+[3408:5172:1012/044003.307:VERBOSE1:gaia_cookie_manager_service.cc(1052)] GaiaCookieManagerService::ListAccounts
+[3408:5172:1012/044003.313:VERBOSE1:component_installer.cc(439)] FinishRegistration for First-Party Sets
+[3408:5172:1012/044003.313:VERBOSE1:component_updater_service.cc(131)] CrxUpdateService starting up. First update attempt will take place in 60 seconds. Next update attempt will take place in 18000 seconds. 
+[3408:5172:1012/044003.313:VERBOSE1:first_party_sets_component_installer.cc(211)] Received First-Party Sets
+[3408:5172:1012/044003.314:VERBOSE1:component_installer.cc(439)] FinishRegistration for pnacl
+[3408:5172:1012/044003.314:VERBOSE1:component_installer.cc(439)] FinishRegistration for Subresource Filter Rules
+[3408:5172:1012/044003.314:VERBOSE1:component_installer.cc(439)] FinishRegistration for Optimization Hints
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for OnDeviceHeadSuggest
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for Trust Token Key Commitments
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for File Type Policies
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for Origin Trials
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for CRLSet
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for PKI Metadata
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for MEI Preload
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(476)] Component ready, version 1.0.7.1652906823 in D:\MazariBot\node_modules\puppeteer-core\.local-chromium\win64-1045629\chrome-win\MEIPreload
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for Safety Tips
+[3408:5172:1012/044003.315:VERBOSE1:component_installer.cc(439)] FinishRegistration for Crowd Deny
+[3408:5172:1012/044003.316:VERBOSE1:component_installer.cc(439)] FinishRegistration for Desktop Sharing Hub
+[3408:5172:1012/044003.316:VERBOSE1:component_installer.cc(439)] FinishRegistration for Hyphenation
+[3408:5172:1012/044003.316:VERBOSE1:component_installer.cc(439)] FinishRegistration for Zxcvbn Data Dictionaries
+[3408:5172:1012/044003.316:VERBOSE1:component_installer.cc(439)] FinishRegistration for Autofill States Data
+[3408:5172:1012/044003.316:VERBOSE1:component_installer.cc(439)] FinishRegistration for Client Side Phishing Detection
+[3408:5172:1012/044003.317:VERBOSE1:component_installer.cc(439)] FinishRegistration for Url Param Classifications
+[3408:5172:1012/044003.317:VERBOSE1:component_installer.cc(439)] FinishRegistration for Certificate Error Assistant
+[3408:5172:1012/044003.321:VERBOSE1:mutable_profile_oauth2_token_service_delegate.cc(341)] MutablePO2TS::OnWebDataServiceRequestDone. Result type: 6
+[3408:5172:1012/044003.321:VERBOSE1:mutable_profile_oauth2_token_service_delegate.cc(394)] MutablePO2TS::LoadAllCredentialsIntoMemory; 0 redential(s).
+[3408:16916:1012/044003.417:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://accounts.google.com/ListAccounts?gpsia=1&source=ChromiumBrowser&json=standard
+[3408:16916:1012/044003.455:VERBOSE1:configured_proxy_resolution_service.cc(1095)] Failed configuring with PAC script, falling-back to manual proxy servers.
+[3408:16916:1012/044003.455:VERBOSE1:configured_proxy_resolution_service.cc(1095)] Failed configuring with PAC script, falling-back to manual proxy servers.
+[3408:16916:1012/044003.471:VERBOSE1:configured_proxy_resolution_service.cc(1095)] Failed configuring with PAC script, falling-back to manual proxy servers.
+[3408:1144:1012/044003.872:VERBOSE1:media_stream_manager.cc(1075)] RFAOSF::Core() [process_id=4, frame_id=1]
+[3408:5172:1012/044003.950:VERBOSE1:gaia_cookie_manager_service.cc(890)] ListAccounts successful
+[3408:5172:1012/044003.951:VERBOSE1:gaia_cookie_manager_service.cc(1088)] GaiaCookieManagerService::HandleNextRequest
+[3408:5172:1012/044003.951:VERBOSE1:gaia_cookie_manager_service.cc(1104)] GaiaCookieManagerService::HandleNextRequest: no more
+[3408:5172:1012/044004.003:VERBOSE1:mutable_profile_oauth2_token_service_delegate.cc(263)] MutablePO2TS::RefreshTokenIsAvailable
+[3408:5172:1012/044004.003:VERBOSE1:account_consistency_mode_manager.cc(197)] Desktop Identity Consistency disabled as sign-in to Chrome is not allowed
+[3408:16916:1012/044005.667:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: http://clients2.google.com/time/1/current?cup2key=6:I-p-XiFUk-Z4mQt7XqKRJeafn208MR2J8x7LXP81oCc&cup2hreq=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+[3408:16916:1012/044006.652:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://web.whatsapp.com/
+[3408:5172:1012/044006.772:INFO:CONSOLE(113)] "Event handler of 'x-storagemutated-1' event must be added on the initial evaluation of worker script.", source: https://static.whatsapp.net/rsrc.php/v4/yr/r/hKBKohsXZJI.js (113)
+[3408:5172:1012/044006.969:VERBOSE1:mutable_profile_oauth2_token_service_delegate.cc(263)] MutablePO2TS::RefreshTokenIsAvailable
+[3408:1144:1012/044006.980:VERBOSE1:media_stream_manager.cc(1075)] RFAOSF::Core() [process_id=6, frame_id=4]
+[3408:5172:1012/044007.001:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Feature xr-spatial-tracking's parameters are ignored.", source:  (0)
+[3408:5172:1012/044007.001:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'attribution-reporting'.", source:  (0)
+[3408:5172:1012/044007.001:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'compute-pressure'.", source:  (0)
+[3408:5172:1012/044007.001:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'interest-cohort'.", source:  (0)
+[3408:5172:1012/044007.001:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-issuance'.", source:  (0)
+[3408:5172:1012/044007.001:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Origin trial controlled feature not enabled: 'shared-storage'.", source:  (0)
+[3408:5172:1012/044007.001:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'shared-storage-select-url'.", source:  (0)
+[3408:5172:1012/044007.002:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'private-state-token-redemption'.", source:  (0)
+[3408:5172:1012/044007.002:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'unload'.", source:  (0)
+[3408:5172:1012/044007.002:INFO:CONSOLE(0)] "Error with Permissions-Policy header: Unrecognized feature: 'window-management'.", source:  (0)
+[3408:5172:1012/044007.004:INFO:CONSOLE(0)] "Document-Policy HTTP header: Unrecognized document policy feature name include-js-call-stacks-in-crash-reports.", source: https://web.whatsapp.com/ (0)
+[3408:5172:1012/044007.016:VERBOSE1:back_forward_cache_impl.cc(642)] BackForwardCacheImpl::GetCurrentBackForwardCacheEligibility: about:blank : No: HTTP status is not OK, scheme is not HTTP or HTTPS, main RenderFrameHost doesn't have response headers set, probably due not having successfully committed a navigation.
+[3408:1144:1012/044007.125:VERBOSE1:media_stream_manager.cc(1075)] RFAOSF::Core() [process_id=6, frame_id=4]
+[3408:16916:1012/044007.137:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v5/yZ/l/0,cross/4rjaRK5bTS0le8nEP60YRG5sITnpGLOVK.css
+[3408:16916:1012/044007.138:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/yF/r/XIL3wonECtp.js
+[3408:16916:1012/044007.138:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/y7/r/icuNvh1FUHq.js
+[3408:16916:1012/044007.139:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/yT/r/iJY2aI38sZf.js
+[3408:16916:1012/044007.143:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/yr/r/y7NXNpeapqjJ-igAh7mklM1JzpOeAFp_GVyveF9crKF_eQB89_b7LMdRmjLj6aJDq45dYO4soUymZUhJI1DsCQ8Hov_dnwHYWLFk799uKyfnGixgKblAd3PPfZ5LFUK9_T8v.js
+[3408:16916:1012/044007.149:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4igUU4/y6/l/en_US-j/PowZGe5RW705GjAviXnNiEBsWF7XCDYdU0TNFahDqdy2T9faoScEnYnCCSb3PtzSto_brpVQmqefs3mDh4wvkHoP-aRR-UR7nE8WpEQ3pEPCZfaZkXuniUZyuxT9IaHKCOBmt1oLs3QIykOlojYrNKC966YHy9XiP6UdVvsWqehdEtWw.js
+[3408:16916:1012/044007.161:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/yT/r/vdT1LXqeGKE.js
+[3408:16916:1012/044007.180:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/yh/r/sDYLXUjq7Nz.js
+[3408:16916:1012/044007.181:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4iaUv4/yp/l/en_US-j/NZQa462txk9.js
+[3408:16916:1012/044007.182:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4ikm44/yO/l/en_US-j/ayF9bymi0eq.js
+[3408:16916:1012/044007.248:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v5/y7/l/0,cross/x9rlqLUjj3j.css
+[3408:16916:1012/044007.821:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: http://clients2.google.com/time/1/current?cup2key=6:L8KuqFKvgqNXMQEw2MEUz-r5QqvmjxuIbkZDfMLqNII&cup2hreq=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+[3408:16916:1012/044010.149:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: http://clients2.google.com/time/1/current?cup2key=6:wTAPCRtw2KzTvGwBVV1DZ0tNGVEuJpWnvcLOe1HcZtc&cup2hreq=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+[3408:16916:1012/044010.919:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://web.whatsapp.com/data/manifest.json
+[3408:16916:1012/044010.923:VERBOSE1:tls_handshaker.cc(101)] TlsClient: Continuing handshake
+[3408:16916:1012/044010.970:VERBOSE1:tls_handshaker.cc(101)] TlsClient: Continuing handshake
+[3408:16916:1012/044010.971:VERBOSE1:tls_handshaker.cc(101)] TlsClient: Continuing handshake
+[3408:16916:1012/044010.972:VERBOSE1:tls_handshaker.cc(101)] TlsClient: Continuing handshake
+[3408:16916:1012/044010.973:VERBOSE1:tls_client_handshaker.cc(495)] Client: handshake finished
+[3408:16916:1012/044011.264:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/yP/r/rYZqPCBaG70.png
+[3408:16916:1012/044011.285:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/y-/r/qmLVV-6EM4D.png
+[3408:16916:1012/044011.860:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/yO/r/_WxPYKNWneH.js
+[3408:16916:1012/044011.944:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://web.whatsapp.com/ajax/bootloader-endpoint/?modules=WAWebLocalesEmojiSuggestionEn&__user=0&__a=1&__req=1&__hs=20373.HYP%3Awhatsapp_comet_pkg.2.1...0&dpr=2&__ccg=UNKNOWN&__rev=1028322146&__s=ch6y2l%3Az48tl9%3Ankgl7t&__hsi=7560298681527520441&__dyn=7xe6E5q1QyUqxemm0NonwgU2owpUco38w5ux609vCwjE0AC0yE1VohwnU1e42C0iK0D8vwa20JUeo9U18E2exu16w2oEG0hi0Lo6-0o21ICwbG1fwJwmEakUpwtU5K0UE1fE7O0QU&__csr=gbcYObaB94myiTIAt3cG9Yj9FMx6iQhV14a9NWiifbIkDvtQD63G-00nAK0aVw4Jg0xi01kNw6Cxm4U0AW08QwHAb4G545ZU2sUtw7Pw9KPhaxh1u&__hsdp=g81Mpn9dh7d15F0yDgkgGdpo98J1uF8x7hFUdGLyuGhHFUPx-i5d0zLyyUSqh2AaybByUiDxu5bxm2yiro4udxO4ag88-Ue82Rzo&__hblp=09I4il0z99ghatE-x2kYTsndsi8H2RMz9lZ0AbTvOf4gx4Fy69A4zrjengh9RFkZ34RtWAblOOOjlcXGlCUDGZ3HRglxjmeACSERoXjxqqdxO4ag88-Ue84gXyBE9wgULw&__sjsp=g81Mpn9dhfg9Ea8&__comet_req=17&__spin_r=1028322146&__spin_b=trunk&__spin_t=1760269208
+[3408:16916:1012/044012.036:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4iC1O4/yD/l/en_US-j/t0Vw63J-GGYYxY2r948lxeYkNat80bS4ucmcgfZ2BrznBWj335tmwRoJBuuCGa2LDZC8a-wYe__-3U77aB06GJyF3XMGAg1HfS1pTwi0N4flXmTEZbFwGpEcc_5I-dCnADDJ63-3ZkYum1lf3JdUHwCrlyJxyPkUk5pfdIMTzVlrlpeywNhDBAvnw6l.js
+[3408:16916:1012/044012.037:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4icyO4/yE/l/en_US-j/A4UasW93U4W.js
+[3408:16916:1012/044012.037:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4iWVu4/yS/l/en_US-j/CxfOWC5RMdN.js
+[3408:16916:1012/044012.038:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4iyjI4/yp/l/en_US-j/w6TjAaWYGEj.js
+[3408:16916:1012/044012.038:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4iccZ4/yF/l/en_US-j/4Nx-r3sFp2R.js
+[3408:16916:1012/044012.039:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4ico74/yB/l/en_US-j/b8NpdgkviYX.js
+[3408:16916:1012/044012.040:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4ipR-4/yN/l/en_US-j/3GbIOmgq5CT.js
+[3408:16916:1012/044012.065:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://web.whatsapp.com/favicon/1x/favicon/
+[3408:16916:1012/044012.505:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/btmanifest/1028322146/whatsapp/main
+[3408:16916:1012/044012.546:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://web.whatsapp.com/favicon/1x/favicon/
+[3408:1144:1012/044012.730:VERBOSE1:media_stream_manager.cc(1075)] MSPL::OnSpeedLimitChange({this=000066700001E830}, {new_limit=34})
+[3408:8992:1012/044012.760:WARNING:page_discarding_helper.cc(126)] Urgently discarding multiple pages with target (kb): 0
+[3408:16916:1012/044013.036:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://web.whatsapp.com/static_resources/webworker_v1/init_script/?__hs=20373.HYP%3Awhatsapp_comet_pkg.2.1...0&__spin_r=1028322146&__spin_b=trunk&__spin_t=1760269208
+[3408:16916:1012/044013.115:VERBOSE1:network_delegate.cc(34)] NetworkDelegate::NotifyBeforeURLRequest: https://static.whatsapp.net/rsrc.php/v4/yN/r/wIR77UO6PQD.js
+[3408:1144:1012/044013.734:VERBOSE1:media_stream_manager.cc(1075)] MSPL::OnSpeedLimitChange({this=000066700001E830}, {new_limit=36})
+[3408:1144:1012/044015.825:VERBOSE1:media_stream_manager.cc(1075)] MSPL::OnSpeedLimitChange({this=000066700001E830}, {new_limit=39})
+[3408:1144:1012/044016.808:VERBOSE1:media_stream_manager.cc(1075)] MSPL::OnSpeedLimitChange({this=000066700001E830}, {new_limit=44})
+[3408:14368:1012/044017.768:WARNING:page_discarding_helper.cc(126)] Urgently discarding multiple pages with target (kb): 0
+[3408:5172:1012/044017.994:WARNING:sad_tab.cc(259)] Tab Killed: https://web.whatsapp.com/
+[3408:1144:1012/044019.836:VERBOSE1:media_stream_manager.cc(1075)] MSPL::OnSpeedLimitChange({this=000066700001E830}, {new_limit=45})
+[3408:1144:1012/044020.859:VERBOSE1:media_stream_manager.cc(1075)] MSPL::OnSpeedLimitChange({this=000066700001E830}, {new_limit=100})

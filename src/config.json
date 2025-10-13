@@ -1,0 +1,9 @@
+{
+  "botName": "MazariBot",
+  "prefix": ".",
+  "welcomeMessage": "Welcome! This is MazariBot. Use .help to see commands.",
+  "autoStatusSeen": false,
+  "autoReply": false,
+  "autoReact": false,
+  "private": true
+}

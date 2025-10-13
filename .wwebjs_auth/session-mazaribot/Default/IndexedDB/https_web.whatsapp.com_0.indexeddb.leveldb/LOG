@@ -1,0 +1,40 @@
+2025/10/12-04:46:59.020 f5c Reusing MANIFEST D:\MazariBot\.wwebjs_auth\session-mazaribot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2025/10/12-04:46:59.021 f5c Recovering log #225
+2025/10/12-04:46:59.021 f5c Reusing old log D:\MazariBot\.wwebjs_auth\session-mazaribot\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000225.log 
+2025/10/12-04:47:05.194 43d4 Compacting 1@1 + 8@2 files
+2025/10/12-04:47:05.502 43d4 Generated table #228@1: 28700 keys, 2184825 bytes
+2025/10/12-04:47:05.618 43d4 Generated table #229@1: 16862 keys, 2172188 bytes
+2025/10/12-04:47:05.671 43d4 Generated table #230@1: 281 keys, 2115179 bytes
+2025/10/12-04:47:05.764 43d4 Level-0 table #233: started
+2025/10/12-04:47:05.770 43d4 Level-0 table #233: 12748 bytes OK
+2025/10/12-04:47:05.772 43d4 Delete type=0 #225
+2025/10/12-04:47:05.881 43d4 Generated table #231@1: 44133 keys, 2170668 bytes
+2025/10/12-04:47:06.607 43d4 Generated table #234@1: 118370 keys, 2274762 bytes
+2025/10/12-04:47:07.293 43d4 Generated table #235@1: 118621 keys, 2275511 bytes
+2025/10/12-04:47:08.044 43d4 Generated table #236@1: 118291 keys, 2274059 bytes
+2025/10/12-04:47:08.383 43d4 Generated table #237@1: 105696 keys, 2036468 bytes
+2025/10/12-04:47:08.383 43d4 Compacted 1@1 + 8@2 files => 17503660 bytes
+2025/10/12-04:47:08.385 43d4 compacted to: files[ 1 0 8 0 0 0 0 ]
+2025/10/12-04:47:08.385 3088 Manual compaction at level-0 from '\x00\x1a\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00\x1b\x00\x00\x00' @ 0 : 0; will stop at '\x00\x1a\x00\x00\x05' @ 1777335 : 1
+2025/10/12-04:47:08.385 3088 Compacting 1@0 + 0@1 files
+2025/10/12-04:47:08.389 3088 Generated table #238@0: 407 keys, 8301 bytes
+2025/10/12-04:47:08.389 3088 Compacted 1@0 + 0@1 files => 8301 bytes
+2025/10/12-04:47:08.390 3088 compacted to: files[ 0 1 8 0 0 0 0 ]
+2025/10/12-04:47:08.390 3088 Delete type=2 #233
+2025/10/12-04:47:08.391 3088 Manual compaction at level-0 from '\x00\x1a\x00\x00\x05' @ 1777335 : 1 .. '\x00\x1b\x00\x00\x00' @ 0 : 0; will stop at (end)
+2025/10/12-04:47:15.491 3088 Compacting 1@1 + 1@2 files
+2025/10/12-04:47:15.675 3088 Generated table #239@1: 28860 keys, 2185060 bytes
+2025/10/12-04:47:15.677 3088 Generated table #240@1: 6 keys, 5565 bytes
+2025/10/12-04:47:15.677 3088 Compacted 1@1 + 1@2 files => 2190625 bytes
+2025/10/12-04:47:15.680 3088 compacted to: files[ 0 0 9 0 0 0 0 ]
+2025/10/12-04:47:15.681 3088 Delete type=2 #216
+2025/10/12-04:47:15.682 3088 Delete type=2 #217
+2025/10/12-04:47:15.682 3088 Delete type=2 #218
+2025/10/12-04:47:15.682 3088 Delete type=2 #219
+2025/10/12-04:47:15.682 3088 Delete type=2 #220
+2025/10/12-04:47:15.682 3088 Delete type=2 #221
+2025/10/12-04:47:15.682 3088 Delete type=2 #222
+2025/10/12-04:47:15.682 3088 Delete type=2 #223
+2025/10/12-04:47:15.682 3088 Delete type=2 #226
+2025/10/12-04:47:15.682 3088 Delete type=2 #228
+2025/10/12-04:47:15.682 3088 Delete type=2 #238

@@ -1,0 +1,251 @@
+const fs = require('fs');
+const path = require('path');
+
+// Initialize data file
+const dataFile = path.join(__dirname, '../data/countdowns.json');
+if (!fs.existsSync(dataFile)) {
+    fs.writeFileSync(dataFile, JSON.stringify({
+        countdowns: {}
+    }, null, 2));
+}
+
+const channelInfo = {
+    contextInfo: {
+        forwardingScore: 1,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
+            newsletterName: 'MAZARI TECH',
+            serverMessageId: -1
+        }
+    }
+};
+
+/**
+ * Format time duration into human readable string
+ */
+function formatDuration(ms) {
+    const seconds = Math.floor((ms / 1000) % 60);
+    const minutes = Math.floor((ms / (1000 * 60)) % 60);
+    const hours = Math.floor((ms / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(ms / (1000 * 60 * 60 * 24));
+
+    const parts = [];
+    if (days > 0) parts.push(`${days} day${days > 1 ? 's' : ''}`);
+    if (hours > 0) parts.push(`${hours} hour${hours > 1 ? 's' : ''}`);
+    if (minutes > 0) parts.push(`${minutes} minute${minutes > 1 ? 's' : ''}`);
+    if (seconds > 0) parts.push(`${seconds} second${seconds > 1 ? 's' : ''}`);
+
+    return parts.join(', ');
+}
+
+/**
+ * Countdown command handler
+ */
+async function countdownCommand(sock, chatId, message, args) {
+    try {
+        const data = JSON.parse(fs.readFileSync(dataFile));
+
+        // Show help if no arguments
+        if (!args || args.length === 0) {
+            let helpText = `*⏰ Countdown System*\n\n`;
+            helpText += `Commands:\n`;
+            helpText += `.countdown add <name> <date/time> - Add new countdown\n`;
+            helpText += `.countdown list - Show all countdowns\n`;
+            helpText += `.countdown del <name> - Delete countdown\n\n`;
+            helpText += `Date formats accepted:\n`;
+            helpText += `- YYYY-MM-DD\n`;
+            helpText += `- YYYY-MM-DD HH:mm\n`;
+            helpText += `- "2h" (2 hours from now)\n`;
+            helpText += `- "3d" (3 days from now)\n\n`;
+            helpText += `Examples:\n`;
+            helpText += `.countdown add exam 2024-05-15\n`;
+            helpText += `.countdown add meeting "2h"\n`;
+            helpText += `.countdown add party "3d 12h"`;
+
+            await sock.sendMessage(chatId, { 
+                text: helpText,
+                ...channelInfo
+            }, { quoted: message });
+            return;
+        }
+
+        const command = args[0].toLowerCase();
+
+        switch (command) {
+            case 'add':
+                if (args.length < 3) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ Please provide both name and date/time.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                const name = args[1].toLowerCase();
+                const timeStr = args.slice(2).join(' ');
+                let targetDate;
+
+                // Parse time string
+                if (timeStr.match(/^\d+[hd](\s+\d+[hd])*$/)) {
+                    // Duration format (e.g., "2h", "3d", "2d 12h")
+                    let ms = 0;
+                    const parts = timeStr.split(' ');
+                    for (const part of parts) {
+                        const num = parseInt(part);
+                        const unit = part.slice(-1);
+                        if (unit === 'h') ms += num * 60 * 60 * 1000;
+                        if (unit === 'd') ms += num * 24 * 60 * 60 * 1000;
+                    }
+                    targetDate = new Date(Date.now() + ms);
+                } else {
+                    // Date format
+                    targetDate = new Date(timeStr);
+                }
+
+                if (isNaN(targetDate.getTime())) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ Invalid date/time format.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                data.countdowns[name] = targetDate.getTime();
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                const timeLeft = targetDate.getTime() - Date.now();
+                await sock.sendMessage(chatId, {
+                    text: `✅ Countdown "${name}" added!\nTime remaining: ${formatDuration(timeLeft)}`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'list':
+                const now = Date.now();
+                let countdowns = Object.entries(data.countdowns)
+                    .map(([name, time]) => ({
+                        name,
+                        remaining: time - now
+                    }))
+                    .filter(c => c.remaining > 0)
+                    .sort((a, b) => a.remaining - b.remaining);
+
+                if (countdowns.length === 0) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ No active countdowns.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                let listText = '*⏰ Active Countdowns*\n\n';
+                countdowns.forEach(({ name, remaining }) => {
+                    listText += `*${name}*\n`;
+                    listText += `⏳ ${formatDuration(remaining)}\n\n`;
+                });
+
+                await sock.sendMessage(chatId, {
+                    text: listText,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'del':
+            case 'delete':
+            case 'remove':
+                if (args.length < 2) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ Please provide the countdown name to delete.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                const toDelete = args[1].toLowerCase();
+                if (!data.countdowns[toDelete]) {
+                    await sock.sendMessage(chatId, {
+                        text: `❌ Countdown "${toDelete}" not found.`,
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                delete data.countdowns[toDelete];
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: `✅ Countdown "${toDelete}" deleted.`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            default:
+                await sock.sendMessage(chatId, {
+                    text: '❌ Unknown command. Use .countdown for help.',
+                    ...channelInfo
+                }, { quoted: message });
+        }
+
+    } catch (error) {
+        console.error('Error in countdown command:', error);
+        await sock.sendMessage(chatId, {
+            text: '❌ Error processing command.',
+            ...channelInfo
+        }, { quoted: message });
+    }
+}
+
+/**
+ * Check and notify about upcoming countdowns
+ */
+async function checkCountdowns(sock) {
+    try {
+        const data = JSON.parse(fs.readFileSync(dataFile));
+        const now = Date.now();
+
+        for (const [name, time] of Object.entries(data.countdowns)) {
+            const remaining = time - now;
+
+            // Remove expired countdowns
+            if (remaining <= 0) {
+                delete data.countdowns[name];
+                continue;
+            }
+
+            // Notify at specific intervals
+            const hours = remaining / (1000 * 60 * 60);
+            if (hours <= 24 && hours >= 23.9 ||  // 24 hours
+                hours <= 1 && hours >= 0.9 ||     // 1 hour
+                remaining <= 300000 && remaining >= 299000) { // 5 minutes
+                
+                // Get all groups
+                const groups = await sock.groupFetchAllParticipating();
+                
+                // Send notification to all groups
+                for (const group of Object.values(groups)) {
+                    await sock.sendMessage(group.id, {
+                        text: `⏰ *Countdown Reminder*\n\n` +
+                              `Event: ${name}\n` +
+                              `Time remaining: ${formatDuration(remaining)}`,
+                        ...channelInfo
+                    });
+                }
+            }
+        }
+
+        // Save updated countdowns
+        fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+    } catch (error) {
+        console.error('Error checking countdowns:', error);
+    }
+}
+
+// Check countdowns every minute
+setInterval(() => checkCountdowns(global.sock), 60000);
+
+module.exports = {
+    countdownCommand,
+    checkCountdowns
+};

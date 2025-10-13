@@ -1,0 +1,435 @@
+const fs = require('fs');
+const path = require('path');
+const moment = require('moment');
+
+// Initialize rental data file
+const dataFile = path.join(__dirname, '../data/rentbot.json');
+if (!fs.existsSync(dataFile)) {
+    fs.writeFileSync(dataFile, JSON.stringify({
+        rentals: {},
+        settings: {
+            pricePerDay: 5, // Default price in USD
+            minDuration: 1, // Minimum rental duration in days
+            maxDuration: 30 // Maximum rental duration in days
+        }
+    }, null, 2));
+}
+
+const channelInfo = {
+    contextInfo: {
+        forwardingScore: 1,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
+            newsletterName: 'MAZARI TECH',
+            serverMessageId: -1
+        }
+    }
+};
+
+/**
+ * Rent bot command handler
+ */
+async function rentbotCommand(sock, chatId, message, args) {
+    try {
+        const data = JSON.parse(fs.readFileSync(dataFile));
+        const senderId = message.key.participant || message.key.remoteJid;
+
+        // Show help if no arguments
+        if (!args || args.length === 0) {
+            let helpText = `*🤖 Bot Rental System*\n\n`;
+            helpText += `Commands:\n`;
+            helpText += `.rentbot rent <days> - Rent the bot\n`;
+            helpText += `.rentbot check - Check your rental status\n`;
+            helpText += `.rentbot price - Show rental prices\n`;
+            helpText += `.rentbot list - List all active rentals\n`;
+            helpText += `.rentbot cancel - Cancel your rental\n\n`;
+            helpText += `Current Prices:\n`;
+            helpText += `${data.settings.pricePerDay}$ per day\n`;
+            helpText += `Min duration: ${data.settings.minDuration} day\n`;
+            helpText += `Max duration: ${data.settings.maxDuration} days\n\n`;
+            helpText += `Contact owner to process payment and activate rental.`;
+
+            await sock.sendMessage(chatId, { 
+                text: helpText,
+                ...channelInfo
+            }, { quoted: message });
+            return;
+        }
+
+        const command = args[0].toLowerCase();
+
+        switch (command) {
+            case 'rent':
+                if (data.rentals[senderId]) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ You already have an active rental! Use .rentbot check to see status.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                const days = parseInt(args[1]);
+                if (isNaN(days) || days < data.settings.minDuration || days > data.settings.maxDuration) {
+                    await sock.sendMessage(chatId, {
+                        text: `❌ Please specify a valid number of days between ${data.settings.minDuration} and ${data.settings.maxDuration}.`,
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                const totalPrice = days * data.settings.pricePerDay;
+                data.rentals[senderId] = {
+                    startDate: null, // Will be set when payment is confirmed
+                    duration: days,
+                    totalPrice: totalPrice,
+                    status: 'pending' // pending, active, expired
+                };
+
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: `✅ Rental request submitted!\n\n` +
+                          `Duration: ${days} days\n` +
+                          `Total Price: $${totalPrice}\n\n` +
+                          `Contact the owner to process payment and activate your rental.`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'check':
+                const rental = data.rentals[senderId];
+                if (!rental) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ You don\'t have any active or pending rentals.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                let statusText = `*🤖 Your Rental Status*\n\n`;
+                statusText += `Status: ${rental.status}\n`;
+                statusText += `Duration: ${rental.duration} days\n`;
+                statusText += `Price: $${rental.totalPrice}\n`;
+                
+                if (rental.startDate) {
+                    const start = moment(rental.startDate);
+                    const end = moment(rental.startDate).add(rental.duration, 'days');
+                    const now = moment();
+                    
+                    statusText += `Start Date: ${start.format('YYYY-MM-DD')}\n`;
+                    statusText += `End Date: ${end.format('YYYY-MM-DD')}\n`;
+                    if (rental.status === 'active') {
+                        statusText += `Time Left: ${moment.duration(end.diff(now)).humanize()}`;
+                    }
+                } else if (rental.status === 'pending') {
+                    statusText += '\nContact owner to activate your rental.';
+                }
+
+                await sock.sendMessage(chatId, {
+                    text: statusText,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'price':
+                let priceText = `*🤖 Bot Rental Prices*\n\n`;
+                priceText += `Price per day: $${data.settings.pricePerDay}\n`;
+                priceText += `Minimum duration: ${data.settings.minDuration} day\n`;
+                priceText += `Maximum duration: ${data.settings.maxDuration} days\n\n`;
+                priceText += `Example prices:\n`;
+                priceText += `1 day: $${data.settings.pricePerDay * 1}\n`;
+                priceText += `7 days: $${data.settings.pricePerDay * 7}\n`;
+                priceText += `30 days: $${data.settings.pricePerDay * 30}\n\n`;
+                priceText += `Use .rentbot rent <days> to rent the bot.`;
+
+                await sock.sendMessage(chatId, {
+                    text: priceText,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'list':
+                const rentals = Object.entries(data.rentals)
+                    .filter(([_, rental]) => rental.status !== 'expired')
+                    .map(([id, rental]) => ({
+                        id,
+                        ...rental
+                    }));
+
+                if (rentals.length === 0) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ No active rentals found.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                let listText = '*🤖 Active Bot Rentals*\n\n';
+                rentals.forEach(rental => {
+                    const user = rental.id.split('@')[0];
+                    listText += `User: @${user}\n`;
+                    listText += `Status: ${rental.status}\n`;
+                    listText += `Duration: ${rental.duration} days\n`;
+                    if (rental.startDate) {
+                        const start = moment(rental.startDate);
+                        const end = moment(rental.startDate).add(rental.duration, 'days');
+                        listText += `Start: ${start.format('YYYY-MM-DD')}\n`;
+                        listText += `End: ${end.format('YYYY-MM-DD')}\n`;
+                    }
+                    listText += `\n`;
+                });
+
+                await sock.sendMessage(chatId, {
+                    text: listText,
+                    mentions: rentals.map(r => r.id),
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'cancel':
+                if (!data.rentals[senderId]) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ You don\'t have any active or pending rentals to cancel.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                delete data.rentals[senderId];
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: '✅ Your rental has been cancelled.',
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            default:
+                await sock.sendMessage(chatId, {
+                    text: '❌ Unknown command. Use .rentbot for help.',
+                    ...channelInfo
+                }, { quoted: message });
+        }
+
+    } catch (error) {
+        console.error('Error in rentbot command:', error);
+        await sock.sendMessage(chatId, {
+            text: '❌ Error processing command.',
+            ...channelInfo
+        }, { quoted: message });
+    }
+}
+
+/**
+ * Admin commands for managing rentals
+ * Only accessible by bot owner
+ */
+async function rentbotAdminCommand(sock, chatId, message, args) {
+    try {
+        if (!args || args.length < 2) {
+            let helpText = `*🤖 RentBot Admin Commands*\n\n`;
+            helpText += `Commands:\n`;
+            helpText += `.rentbotadmin activate <@user> - Activate a pending rental\n`;
+            helpText += `.rentbotadmin deactivate <@user> - Deactivate an active rental\n`;
+            helpText += `.rentbotadmin setprice <amount> - Set price per day\n`;
+            helpText += `.rentbotadmin setmin <days> - Set minimum rental duration\n`;
+            helpText += `.rentbotadmin setmax <days> - Set maximum rental duration\n`;
+            helpText += `.rentbotadmin clear - Clear all expired rentals`;
+
+            await sock.sendMessage(chatId, { 
+                text: helpText,
+                ...channelInfo
+            }, { quoted: message });
+            return;
+        }
+
+        const data = JSON.parse(fs.readFileSync(dataFile));
+        const command = args[0].toLowerCase();
+
+        switch (command) {
+            case 'activate':
+                const userToActivate = message.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+                if (!userToActivate || !data.rentals[userToActivate]) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ Please tag a user with a pending rental.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                data.rentals[userToActivate].status = 'active';
+                data.rentals[userToActivate].startDate = new Date().toISOString();
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: `✅ Rental activated for @${userToActivate.split('@')[0]}`,
+                    mentions: [userToActivate],
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'deactivate':
+                const userToDeactivate = message.message.extendedTextMessage?.contextInfo?.mentionedJid?.[0];
+                if (!userToDeactivate || !data.rentals[userToDeactivate]) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ Please tag a user with an active rental.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                delete data.rentals[userToDeactivate];
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: `✅ Rental deactivated for @${userToDeactivate.split('@')[0]}`,
+                    mentions: [userToDeactivate],
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'setprice':
+                const newPrice = parseFloat(args[1]);
+                if (isNaN(newPrice) || newPrice <= 0) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ Please provide a valid price.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                data.settings.pricePerDay = newPrice;
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: `✅ Price per day set to $${newPrice}`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'setmin':
+                const minDays = parseInt(args[1]);
+                if (isNaN(minDays) || minDays <= 0) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ Please provide a valid number of days.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                data.settings.minDuration = minDays;
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: `✅ Minimum rental duration set to ${minDays} days`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'setmax':
+                const maxDays = parseInt(args[1]);
+                if (isNaN(maxDays) || maxDays <= 0) {
+                    await sock.sendMessage(chatId, {
+                        text: '❌ Please provide a valid number of days.',
+                        ...channelInfo
+                    }, { quoted: message });
+                    return;
+                }
+
+                data.settings.maxDuration = maxDays;
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: `✅ Maximum rental duration set to ${maxDays} days`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            case 'clear':
+                const now = moment();
+                const expired = Object.entries(data.rentals)
+                    .filter(([_, rental]) => {
+                        if (!rental.startDate) return false;
+                        const end = moment(rental.startDate).add(rental.duration, 'days');
+                        return now.isAfter(end);
+                    })
+                    .map(([id]) => id);
+
+                expired.forEach(id => delete data.rentals[id]);
+                fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+                await sock.sendMessage(chatId, {
+                    text: `✅ Cleared ${expired.length} expired rentals`,
+                    ...channelInfo
+                }, { quoted: message });
+                break;
+
+            default:
+                await sock.sendMessage(chatId, {
+                    text: '❌ Unknown admin command. Use .rentbotadmin for help.',
+                    ...channelInfo
+                }, { quoted: message });
+        }
+
+    } catch (error) {
+        console.error('Error in rentbot admin command:', error);
+        await sock.sendMessage(chatId, {
+            text: '❌ Error processing admin command.',
+            ...channelInfo
+        }, { quoted: message });
+    }
+}
+
+/**
+ * Check rentals periodically and update statuses
+ */
+async function checkRentals(sock) {
+    try {
+        const data = JSON.parse(fs.readFileSync(dataFile));
+        const now = moment();
+
+        for (const [userId, rental] of Object.entries(data.rentals)) {
+            if (!rental.startDate || rental.status !== 'active') continue;
+
+            const end = moment(rental.startDate).add(rental.duration, 'days');
+            if (now.isAfter(end)) {
+                // Rental has expired
+                delete data.rentals[userId];
+                try {
+                    await sock.sendMessage(userId, {
+                        text: '❌ Your bot rental has expired. Use .rentbot rent to rent again.',
+                        ...channelInfo
+                    });
+                } catch (error) {
+                    console.error('Error sending expiration notice:', error);
+                }
+            } else if (moment(end).diff(now, 'hours') <= 24) {
+                // Rental expires within 24 hours
+                try {
+                    await sock.sendMessage(userId, {
+                        text: `⚠️ Your bot rental expires in ${moment.duration(end.diff(now)).humanize()}.\n` +
+                              'Use .rentbot rent to extend your rental.',
+                        ...channelInfo
+                    });
+                } catch (error) {
+                    console.error('Error sending expiration warning:', error);
+                }
+            }
+        }
+
+        fs.writeFileSync(dataFile, JSON.stringify(data, null, 2));
+
+    } catch (error) {
+        console.error('Error checking rentals:', error);
+    }
+}
+
+// Check rentals every hour
+setInterval(() => checkRentals(global.sock), 3600000);
+
+module.exports = {
+    rentbotCommand,
+    rentbotAdminCommand,
+    checkRentals
+};

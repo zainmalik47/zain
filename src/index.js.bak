@@ -1,0 +1,216 @@
+const fs = require('fs')
+const path = require('path')
+const axios = require('axios')
+const { Client, LocalAuth } = require('whatsapp-web.js')
+const AdmZip = require('adm-zip')
+const CommandConverter = require('./lib/CommandConverter')
+const { logMessageDetails, extractMessageContent } = require('./lib/debugUtils')
+
+async function startPairFlow() {
+  while (true) {
+    console.log('\nPair-code authentication flow (no QR will be shown).')
+    console.log("Options:")
+    console.log("1. Enter an existing pair code to use it")
+    console.log("2. Type 'get' to generate a new pair code")
+    console.log("3. Type 'import' to import a session")
+    console.log("4. Type 'exit' to quit")
+    const opt = (await ask('Enter your choice: ')).trim().toLowerCase()
+
+    if (!opt) {
+      console.log('No input provided. Please make a selection.')
+      continue
+    }
+
+    if (opt === 'exit') {
+      console.log('Exiting MazariBot. Bye!')
+      process.exit(0)
+    }
+
+    if (opt === 'get') {
+      const phoneNumber = (await ask('Enter your WhatsApp number (e.g., 91702395XXXX): ')).trim()
+      if (!phoneNumber) {
+        console.log('No phone number provided. Returning to main menu.')
+        continue
+      }
+
+      console.log('Generating pair code...')
+      try {
+        const response = await axios.get(`https://knight-bot-paircode.onrender.com/code?number=${phoneNumber}`)
+        if (response.data && response.data.code) {
+          if (response.data.code === "Service Unavailable") {
+            console.log('Service is currently unavailable. Please try again later.')
+          } else {
+            console.log(`Your pair code is: ${response.data.code}`)
+            console.log('Use this code in your WhatsApp mobile app to connect.')
+          }
+        }
+      } catch (error) {
+        console.error('Failed to generate pair code:', error.message)
+      }
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      continue
+    }qrcode = require('qrcode-terminal')
+const { Client, LocalAuth } = require('whatsapp-web.js')
+const AdmZip = require('adm-zip')
+const CommandConverter = require('./lib/CommandConverter')
+const { logMessageDetails, extractMessageContent } = require('./lib/debugUtils')
+
+// Configuration for handling self-messages (messages from the connected account)
+const DEBUG = {
+    ALLOW_SELF_MESSAGES: true,  // Toggle for processing messages from connected account
+    VERBOSE_LOGGING: true       // Toggle for detailed message logging
+}
+
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')))
+const emojis = JSON.parse(fs.readFileSync(path.join(__dirname, 'emojis.json')))
+
+// pairs storage (numbers allowed to use bot when private)
+const pairsFile = path.join(__dirname, 'pairs.json')
+let pairs = {}
+try { pairs = JSON.parse(fs.readFileSync(pairsFile)) } catch (e) { pairs = {} }
+
+function savePairs() { fs.writeFileSync(pairsFile, JSON.stringify(pairs, null, 2)) }
+
+// privacy: by default bot is private (only owners and private chat allowed)
+if (typeof config.private === 'undefined') config.private = true
+if (typeof config.suppressQR === 'undefined') config.suppressQR = false
+
+function saveConfig() {
+  fs.writeFileSync(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 2))
+}
+
+const readline = require('readline')
+
+// Pair-code session storage
+const sessionsRoot = path.join(__dirname, 'sessions')
+if (!fs.existsSync(sessionsRoot)) fs.mkdirSync(sessionsRoot, { recursive: true })
+
+let client = null
+let chosenAuthDir = null
+
+function ask(question) {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+  return new Promise(resolve => rl.question(question, ans => { rl.close(); resolve(ans); }))
+}
+
+async function startPairFlow() {
+
+  while (true) {
+    console.log('\nPair-code authentication flow (no QR will be shown).')
+    console.log("Options: type an existing pair code to use it, type 'import' to import a session (zip base64), or type 'exit' to quit.")
+    const opt = (await ask('Enter pair code, import, or exit: ')).trim()
+
+    if (!opt) {
+      console.log('No input provided. Please enter a pair code, import, or exit.')
+      continue
+    }
+
+    if (opt.toLowerCase() === 'exit') {
+      console.log('Exiting MazariBot. Bye!')
+      process.exit(0)
+    }
+
+    if (opt.toLowerCase() === 'import') {
+      const code = (await ask('Enter pair code to assign this session to (short text): ')).trim()
+      if (!code) { console.log('No code entered. Returning to main menu.'); continue }
+      const b64 = (await ask('Paste session zip as BASE64 (single line) and press Enter: ')).trim()
+      if (!b64) { console.log('No session data provided. Returning to main menu.'); continue }
+
+      const dest = path.join(sessionsRoot, code)
+      try {
+        if (fs.existsSync(dest)) fs.rmSync(dest, { recursive: true, force: true })
+        fs.mkdirSync(dest, { recursive: true })
+        const zipPath = path.join(dest, 'session.zip')
+        fs.writeFileSync(zipPath, Buffer.from(b64, 'base64'))
+        const zip = new AdmZip(zipPath)
+        zip.extractAllTo(dest, true)
+        fs.unlinkSync(zipPath)
+
+        pairs[code] = { authDir: dest, created: new Date().toISOString() }
+        savePairs()
+        chosenAuthDir = dest
+        console.log(`Imported session for code '${code}'`)
+        break
+      } catch (e) {
+        console.error('Failed to import session:', e)
+        continue
+      }
+    } else {
+      const code = opt
+      if (!pairs[code] || !pairs[code].authDir || !fs.existsSync(pairs[code].authDir)) {
+        console.log(`Pair code '${code}' not found or session directory missing.`)
+        console.log('If you have a session zip, type import to add it, or try another code.')
+        continue
+      }
+      chosenAuthDir = pairs[code].authDir
+      console.log(`Using session for code '${code}'`)
+      break
+    }
+  }
+
+
+  // create client with chosen auth dir
+  client = new Client({
+    authStrategy: new LocalAuth({ clientId: 'mazaribot', dataPath: chosenAuthDir }),
+    puppeteer: { 
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--disable-gpu'
+      ]
+    }
+  })
+
+  // Attach event handlers after client is created
+  attachClientHandlers()
+
+  client.initialize().catch(e => { console.error('Failed to initialize client:', e); process.exit(1) })
+}
+
+
+
+console.log('Starting MazariBot...')
+console.log('Scanning loaded commands...')
+// Configuration for handling self-messages
+const DEBUG = {
+    ALLOW_SELF_MESSAGES: true,
+    VERBOSE_LOGGING: true
+}
+
+const config = JSON.parse(fs.readFileSync(path.join(__dirname, 'config.json')))
+const emojis = JSON.parse(fs.readFileSync(path.join(__dirname, 'emojis.json')))
+
+// pairs storage
+const pairsFile = path.join(__dirname, 'pairs.json')
+let pairs = {}
+try { pairs = JSON.parse(fs.readFileSync(pairsFile)) } catch (e) { pairs = {} }
+
+function savePairs() { fs.writeFileSync(pairsFile, JSON.stringify(pairs, null, 2)) }
+
+if (typeof config.private === 'undefined') config.private = true
+if (typeof config.suppressQR === 'undefined') config.suppressQR = false
+
+function saveConfig() {
+  fs.writeFileSync(path.join(__dirname, 'config.json'), JSON.stringify(config, null, 2))
+}
+
+const readline = require('readline')
+
+// Pair-code session storage
+const sessionsRoot = path.join(__dirname, 'sessions')
+if (!fs.existsSync(sessionsRoot)) fs.mkdirSync(sessionsRoot, { recursive: true })
+
+let client = null
+let chosenAuthDir = null
+
+function ask(question) {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
+  return new Promise(resolve => rl.question(question, ans => { rl.close(); resolve(ans); }))
+}
+
+// Start the bot with pair code authentication
+console.log('Starting MazariBot...')
+startPairFlow()

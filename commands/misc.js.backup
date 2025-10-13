@@ -1,0 +1,292 @@
+const axios = require('axios');
+const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
+const { uploadImage } = require('../lib/uploadImage');
+
+const channelInfo = {
+    contextInfo: {
+        forwardingScore: 1,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+            newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
+            newsletterName: 'MAZARI TECH',
+            serverMessageId: -1
+        }
+    }
+};
+
+async function getQuotedOrOwnImageUrl(sock, message) {
+    try {
+        // 1) Quoted image (highest priority)
+        const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
+        if (quoted?.imageMessage) {
+            const stream = await downloadContentFromMessage(quoted.imageMessage, 'image');
+            const chunks = [];
+            for await (const chunk of stream) chunks.push(chunk);
+            const buffer = Buffer.concat(chunks);
+            const url = await uploadImage(buffer);
+            console.log('Successfully uploaded quoted image:', url);
+            return url;
+        }
+
+        // 2) Image in the current message
+        if (message.message?.imageMessage) {
+            const stream = await downloadContentFromMessage(message.message.imageMessage, 'image');
+            const chunks = [];
+            for await (const chunk of stream) chunks.push(chunk);
+            const buffer = Buffer.concat(chunks);
+            const url = await uploadImage(buffer);
+            console.log('Successfully uploaded message image:', url);
+            return url;
+        }
+
+        // 3) Mentioned or replied participant avatar
+        let targetJid;
+        const ctx = message.message?.extendedTextMessage?.contextInfo;
+        if (ctx?.mentionedJid?.length > 0) {
+            targetJid = ctx.mentionedJid[0];
+        } else if (ctx?.participant) {
+            targetJid = ctx.participant;
+        } else {
+            targetJid = message.key.participant || message.key.remoteJid;
+        }
+
+        try {
+            const url = await sock.profilePictureUrl(targetJid, 'image');
+            console.log('Successfully got profile picture:', url);
+            return url;
+        } catch (profileError) {
+            console.log('Failed to get profile picture, using default:', profileError.message);
+            // Using a more reliable default image
+            return 'https://raw.githubusercontent.com/sarukhmazari/MazariBot/main/assets/bot_image.jpg';
+        }
+    } catch (error) {
+        console.error('Error in getQuotedOrOwnImageUrl:', error);
+        throw error;
+    }
+}
+
+async function handleHeart(sock, chatId, message) {
+    try {
+        const avatarUrl = await getQuotedOrOwnImageUrl(sock, message);
+        const url = `https://api.some-random-api.com/canvas/misc/heart?avatar=${encodeURIComponent(avatarUrl)}`;
+        const response = await axios.get(url, { responseType: 'arraybuffer' });
+        await sock.sendMessage(chatId, { image: Buffer.from(response.data) }, { quoted: message });
+    } catch (error) {
+        console.error('Error in misc heart:', error);
+        await sock.sendMessage(chatId, { text: '❌ Failed to create heart image. Try again later.' }, { quoted: message });
+    }
+}
+
+async function miscCommand(sock, chatId, message, args) {
+    const sub = (args[0] || '').toLowerCase();
+    const rest = args.slice(1);
+
+    // Show processing message
+    const processingMsg = await sock.sendMessage(chatId, { 
+        text: '⌛ Processing your request...', 
+        ...channelInfo 
+    }, { quoted: message });
+
+    async function simpleAvatarOnly(endpoint, customApi = false) {
+        try {
+            const avatarUrl = await getQuotedOrOwnImageUrl(sock, message);
+            
+            // Use custom API for certain effects
+            const baseUrl = customApi 
+                ? 'https://api.lolhuman.xyz/api/editor'
+                : 'https://api.some-random-api.com/canvas/misc';
+                
+            const url = customApi
+                ? `${baseUrl}/${endpoint}?apikey=85faf717d0545d14074659ad&img=${encodeURIComponent(avatarUrl)}`
+                : `${baseUrl}/${endpoint}?avatar=${encodeURIComponent(avatarUrl)}`;
+
+            console.log(`Fetching from URL: ${url}`);
+            
+            const response = await axios.get(url, { 
+                responseType: 'arraybuffer',
+                timeout: 15000 // 15 second timeout
+            });
+
+            // Delete processing message
+            if (processingMsg.key) {
+                await sock.sendMessage(chatId, { delete: processingMsg.key });
+            }
+
+            await sock.sendMessage(chatId, { 
+                image: Buffer.from(response.data),
+                caption: `✨ Effect: ${endpoint}`,
+                ...channelInfo
+            }, { quoted: message });
+
+        } catch (error) {
+            console.error(`Error in ${endpoint} effect:`, error);
+            throw error; // Let the main error handler deal with it
+        }
+    }
+
+    try {
+        switch (sub) {
+            case 'heart':
+                await simpleAvatarOnly('heart');
+                break;
+            
+            case 'horny':
+                await simpleAvatarOnly('horny');
+                break;
+            case 'circle':
+                await simpleAvatarOnly('circle');
+                break;
+            case 'lgbt':
+                await simpleAvatarOnly('lgbt');
+                break;
+            case 'lied':
+                await simpleAvatarOnly('lied');
+                break;
+            case 'lolice':
+                await simpleAvatarOnly('lolice');
+                break;
+            case 'simpcard':
+                await simpleAvatarOnly('simpcard');
+                break;
+            case 'tonikawa':
+                await simpleAvatarOnly('tonikawa');
+                break;
+
+            case 'its-so-stupid': {
+                const dog = rest.join(' ').trim();
+                if (!dog) {
+                    await sock.sendMessage(chatId, { text: 'Usage: .misc its-so-stupid <text>' }, { quoted: message });
+                    return;
+                }
+                const avatarUrl = await getQuotedOrOwnImageUrl(sock, message);
+                const url = `https://api.some-random-api.com/canvas/misc/its-so-stupid?dog=${encodeURIComponent(dog)}&avatar=${encodeURIComponent(avatarUrl)}`;
+                const response = await axios.get(url, { responseType: 'arraybuffer' });
+                await sock.sendMessage(chatId, { image: Buffer.from(response.data) }, { quoted: message });
+                break;
+            }
+
+            case 'namecard': {
+                // .misc namecard username|birthday|description(optional)
+                const joined = rest.join(' ');
+                const [username, birthday, description] = joined.split('|').map(s => (s || '').trim());
+                if (!username || !birthday) {
+                    await sock.sendMessage(chatId, { text: 'Usage: .misc namecard username|birthday|description(optional)' }, { quoted: message });
+                    return;
+                }
+                const avatarUrl = await getQuotedOrOwnImageUrl(sock, message);
+                const params = new URLSearchParams({ username, birthday, avatar: avatarUrl });
+                if (description) params.append('description', description);
+                const url = `https://api.some-random-api.com/canvas/misc/namecard?${params.toString()}`;
+                const response = await axios.get(url, { responseType: 'arraybuffer' });
+                await sock.sendMessage(chatId, { image: Buffer.from(response.data) }, { quoted: message });
+                break;
+            }
+
+           
+            case 'oogway':
+            case 'oogway2': {
+                const quote = rest.join(' ').trim();
+                if (!quote) {
+                    await sock.sendMessage(chatId, { text: `Usage: .misc ${sub} <quote>` }, { quoted: message });
+                    return;
+                }
+                const avatarUrl = await getQuotedOrOwnImageUrl(sock, message);
+                const url = `https://api.some-random-api.com/canvas/misc/${sub}?quote=${encodeURIComponent(quote)}&avatar=${encodeURIComponent(avatarUrl)}`;
+                const response = await axios.get(url, { responseType: 'arraybuffer' });
+                await sock.sendMessage(chatId, { image: Buffer.from(response.data) }, { quoted: message });
+                break;
+            }
+
+            case 'tweet': {
+                // .misc tweet displayname|username|comment|theme(optional: light/dark)
+                const joined = rest.join(' ');
+                const [displayname, username, comment, theme] = joined.split('|').map(s => (s || '').trim());
+                if (!displayname || !username || !comment) {
+                    await sock.sendMessage(chatId, { text: 'Usage: .misc tweet displayname|username|comment|theme(optional light/dark)' }, { quoted: message });
+                    return;
+                }
+                const avatarUrl = await getQuotedOrOwnImageUrl(sock, message);
+                const params = new URLSearchParams({ displayname, username, comment, avatar: avatarUrl });
+                if (theme) params.append('theme', theme);
+                const url = `https://api.some-random-api.com/canvas/misc/tweet?${params.toString()}`;
+                const response = await axios.get(url, { responseType: 'arraybuffer' });
+                await sock.sendMessage(chatId, { image: Buffer.from(response.data) }, { quoted: message });
+                break;
+            }
+
+            case 'youtube-comment': {
+                // .misc youtube-comment username|comment
+                const joined = rest.join(' ');
+                const [username, comment] = joined.split('|').map(s => (s || '').trim());
+                if (!username || !comment) {
+                    await sock.sendMessage(chatId, { text: 'Usage: .misc youtube-comment username|comment' }, { quoted: message });
+                    return;
+                }
+                const avatarUrl = await getQuotedOrOwnImageUrl(sock, message);
+                const params = new URLSearchParams({ username, comment, avatar: avatarUrl });
+                const url = `https://api.some-random-api.com/canvas/misc/youtube-comment?${params.toString()}`;
+                const response = await axios.get(url, { responseType: 'arraybuffer' });
+                await sock.sendMessage(chatId, { image: Buffer.from(response.data) }, { quoted: message });
+                break;
+            }
+            // Overlay endpoints
+            case 'comrade':
+            case 'gay':
+            case 'glass':
+            case 'jail':
+            case 'passed':
+            case 'triggered': {
+                const avatarUrl = await getQuotedOrOwnImageUrl(sock, message);
+                const overlay = sub; // same name for path
+                const url = `https://api.some-random-api.com/canvas/overlay/${overlay}?avatar=${encodeURIComponent(avatarUrl)}`;
+                const response = await axios.get(url, { responseType: 'arraybuffer' });
+                await sock.sendMessage(chatId, { image: Buffer.from(response.data) }, { quoted: message });
+                break;
+            }
+
+            default:
+                await sock.sendMessage(chatId, { text: 'Usage: .misc <heart|horny|circle|lgbt|lesbian|nonbinary|pansexual|transgender|lied|lolice|simpcard|tonikawa|its-so-stupid <text>|namecard u|b|d?|nobitches <text>|oogway <q>|oogway2 <q>|tweet dn|un|c|theme?|youtube-comment un|c>' }, { quoted: message });
+                break;
+        }
+    } catch (error) {
+        console.error('Error in misc command:', error);
+        
+        // Delete processing message if it exists
+        if (processingMsg?.key) {
+            await sock.sendMessage(chatId, { delete: processingMsg.key });
+        }
+
+        let errorMessage = '❌ Failed to generate image.';
+        
+        if (error.response?.status === 400) {
+            errorMessage = '❌ Invalid parameters. Please check your command format.';
+        } else if (error.response?.status === 429) {
+            errorMessage = '❌ API rate limit reached. Please try again in a few minutes.';
+        } else if (error.code === 'ECONNABORTED') {
+            errorMessage = '❌ Request timed out. The server might be busy.';
+        }
+
+        await sock.sendMessage(chatId, { 
+            text: `${errorMessage}\n\n*Available Commands:*\n\n` +
+                  '1. Image Effects:\n' +
+                  '  • .gay (reply to image/user)\n' +
+                  '  • .circle (reply to image/user)\n' +
+                  '  • .blur (reply to image/user)\n' +
+                  '  • .jail (reply to image/user)\n' +
+                  '  • .comrade (reply to image/user)\n' +
+                  '\n2. Text Effects:\n' +
+                  '  • .misc tweet display|username|text\n' +
+                  '  • .misc oogway your text\n' +
+                  '  • .misc oogway2 your text\n' +
+                  '\n3. Fun Effects:\n' +
+                  '  • .misc horny (reply to image/user)\n' +
+                  '  • .misc simpcard (reply to image/user)\n' +
+                  '  • .misc lolice (reply to image/user)\n',
+            ...channelInfo 
+        }, { quoted: message });
+    }
+}
+
+module.exports = { miscCommand, handleHeart };
+
+

@@ -1,0 +1,8 @@
+{
+  "rentals": {},
+  "settings": {
+    "pricePerDay": 5,
+    "minDuration": 1,
+    "maxDuration": 30
+  }
+}
