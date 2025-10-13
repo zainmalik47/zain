@@ -5,5 +5,5 @@
   "autoStatusSeen": false,
   "autoReply": false,
   "autoReact": false,
-  "private": false
+  "private": true
 }

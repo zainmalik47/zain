@@ -129,8 +129,6 @@ async function handleMessages(sock, messageUpdate, isFromMe = false) {
     
     console.log(`\n📨 Message #${messageCount}: "${messageContent}" from ${isFromMeMsg ? 'YOU' : 'OTHER'} (${senderJid})`)
     
-    // Bot is open to all users - no owner restrictions
-    
     if (messageContent.startsWith(config.prefix)) {
       console.log(`🎯 COMMAND DETECTED: ${messageContent}`)
     }
@@ -235,8 +233,8 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
         const mockMsg = {
           ...msg,
           reply: async (text) => {
-            // Don't send immediately - let main handler send it
-            return { success: true, message: text }
+            await sock.sendMessage(senderJid, { text })
+            return { success: true }
           },
           getContact: async () => ({
             id: { _serialized: senderJid },
@@ -290,9 +288,6 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
           return result.message
         } else if (typeof result === 'string') {
           return result
-        } else if (result && result.success) {
-          // Command executed successfully but no message to return
-          return '✅ Command executed successfully'
         } else {
           return '✅ Command executed successfully'
         }
@@ -455,7 +450,7 @@ async function initializeBot(sock) {
 
     sock.ev.on('messages.upsert', async (messageUpdate) => {
       try {
-        await handleMessages(sock, messageUpdate, false)
+        await handleMessages(sock, messageUpdate, true)
       } catch (error) {
         console.error('❌ Error handling message:', error)
       }
