@@ -613,7 +613,27 @@ async function startBot() {
         console.log(`Connection closed. Reason: ${reason}`)
 
         if (status === DisconnectReason.loggedOut || status === 401) {
-          console.log('Session logged out. Please re-link.')
+          console.log('Session logged out. Clearing session and restarting...')
+          
+          // Clear session files
+          try {
+            if (fs.existsSync(SESSION_DIR)) {
+              fs.rmSync(SESSION_DIR, { recursive: true, force: true })
+              console.log('✅ Session directory cleared')
+            }
+            if (fs.existsSync(STORE_FILE)) {
+              fs.unlinkSync(STORE_FILE)
+              console.log('✅ Store file cleared')
+            }
+          } catch (error) {
+            console.error('Error clearing session files:', error)
+          }
+          
+          // Restart the bot after clearing session
+          console.log('🔄 Restarting bot with fresh session...')
+          setTimeout(() => {
+            startBot()
+          }, 2000)
           return
         }
 
