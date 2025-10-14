@@ -1,6 +1,19 @@
-# 🤖 ZainBot - WhatsApp Bot
+# 🤖 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★ - WhatsApp Bot
 
 A powerful, mobile-based WhatsApp bot built with Baileys library. This bot supports both QR code and pairing code authentication methods.
+
+## 🚀 Quick Deploy on Railway
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?template=https://github.com/sarukhmazari/zainbot&envs=BOT_NAME%2CPHONE_NUMBER)
+
+**One-Click Deployment**: Click the button above to deploy your bot directly to Railway with zero configuration!
+
+### 🎯 What You Get:
+- ✅ **Custom Bot Name**: 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★
+- ✅ **Auto-Reply System**: Beautiful custom messages
+- ✅ **100+ Commands**: Fun, utility, admin, and media commands
+- ✅ **Mobile-Based**: No WhatsApp Web required
+- ✅ **Professional Setup**: Ready for production use
 
 ## 📱 Features
 
@@ -64,13 +77,13 @@ ls -la src/
 # If config.json doesn't exist, create it:
 cat > src/config.json << EOF
 {
-  "botName": "ZainBot",
+  "botName": "𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★",
   "prefix": ".",
   "private": true,
   "autoReply": false,
   "autoReact": false,
   "autoStatusSeen": false,
-  "welcomeMessage": "Welcome! This is ZainBot. Use .help to see commands."
+  "welcomeMessage": "Welcome! This is 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★. Use .help to see commands."
 }
 EOF
 
@@ -170,13 +183,13 @@ node src/index.js
 
 ```json
 {
-  "botName": "ZainBot",
+  "botName": "𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★",
   "prefix": ".",
   "private": true,
   "autoReply": false,
   "autoReact": false,
   "autoStatusSeen": false,
-  "welcomeMessage": "Welcome! This is ZainBot. Use .help to see commands."
+  "welcomeMessage": "Welcome! This is 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★. Use .help to see commands."
 }
 ```
 
