@@ -1,6 +1,9 @@
 [build]
 builder = "nixpacks"
 
+[build.nixpacksConfig]
+phases.install = "npm install --legacy-peer-deps"
+
 [deploy]
 startCommand = "node src/index.js"
 healthcheckPath = "/"
