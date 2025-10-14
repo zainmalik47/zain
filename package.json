@@ -1,7 +1,7 @@
 {
-  "name": "mazaribot",
+  "name": "zainbot",
   "version": "1.0.0",
-  "description": "MazariBot - WhatsApp bot scaffold (Baileys)",
+  "description": "𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★ - WhatsApp bot scaffold (Baileys)",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

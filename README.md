@@ -1,4 +1,4 @@
-# 🤖 MazariBot - WhatsApp Bot
+# 🤖 ZainBot - WhatsApp Bot
 
 A powerful, mobile-based WhatsApp bot built with Baileys library. This bot supports both QR code and pairing code authentication methods.
 
@@ -38,8 +38,8 @@ npm --version
 
 ```bash
 # Create a directory for the bot
-mkdir ~/MazariBot
-cd ~/MazariBot
+mkdir ~/ZainBot
+cd ~/ZainBot
 
 # If you have the bot files, copy them here
 # Or clone from repository if available
@@ -64,13 +64,13 @@ ls -la src/
 # If config.json doesn't exist, create it:
 cat > src/config.json << EOF
 {
-  "botName": "MazariBot",
+  "botName": "ZainBot",
   "prefix": ".",
   "private": true,
   "autoReply": false,
   "autoReact": false,
   "autoStatusSeen": false,
-  "welcomeMessage": "Welcome! This is MazariBot. Use .help to see commands."
+  "welcomeMessage": "Welcome! This is ZainBot. Use .help to see commands."
 }
 EOF
 
@@ -84,7 +84,7 @@ EOF
 
 ```bash
 # Navigate to bot directory
-cd ~/MazariBot
+cd ~/ZainBot
 
 # Start the bot
 node src/index.js
@@ -170,13 +170,13 @@ node src/index.js
 
 ```json
 {
-  "botName": "MazariBot",
+  "botName": "ZainBot",
   "prefix": ".",
   "private": true,
   "autoReply": false,
   "autoReact": false,
   "autoStatusSeen": false,
-  "welcomeMessage": "Welcome! This is MazariBot. Use .help to see commands."
+  "welcomeMessage": "Welcome! This is ZainBot. Use .help to see commands."
 }
 ```
 
@@ -269,10 +269,10 @@ tar -xzf session_backup.tar.gz
 nohup node src/index.js > bot.log 2>&1 &
 
 # Using screen (install first: pkg install screen)
-screen -S mazaribot
+screen -S zainbot
 node src/index.js
 # Press Ctrl+A, then D to detach
-# Use 'screen -r mazaribot' to reattach
+# Use 'screen -r zainbot' to reattach
 ```
 
 ### Auto-start on Boot
@@ -280,7 +280,7 @@ node src/index.js
 # Create startup script
 cat > ~/.termux/boot/start-bot.sh << EOF
 #!/bin/bash
-cd ~/MazariBot
+cd ~/ZainBot
 node src/index.js &
 EOF
 
@@ -309,12 +309,11 @@ ps -o pid,ppid,cmd,%mem,%cpu --sort=-%mem | grep node
 ## 📞 Support
 
 For support and updates:
-- **Owner**: ZOXER
-- **Number**: +923232391033
+- **Owner**: 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★
+- **Number**: +92 343 7408518
 - **Channels**: 
-  - [ZOXER Official](https://whatsapp.com/channel/0029VbBRITODzgTGQhZSFT3P)
-  - [MAZARI TECH](https://whatsapp.com/channel/0029Vb6GUj8BPzjOWNfnhm1B)
-- **YouTube**: [ZOXER Tech](https://youtube.com/@zoxertech)
+  - [Instagram](https://www.instagram.com/zain.maalik47?utm_source=qr)
+- **Social Media**: [Instagram](https://www.instagram.com/zain.maalik47?utm_source=qr)
 
 ## 📄 License
 
@@ -322,6 +321,6 @@ MIT License - Feel free to modify and distribute.
 
 ---
 
-**Made with ❤️ by ZOXER & MAZARI**
+**Made with ❤️ by 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★**
 
 *This bot is for educational purposes only. Use responsibly and in accordance with WhatsApp's Terms of Service.*

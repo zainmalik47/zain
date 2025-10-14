@@ -33,7 +33,7 @@ module.exports = {
             const uptimeFormatted = formatTime(uptimeInSeconds);
 
             const botInfo = `
-┏━━〔 🤖 𝐌𝐚𝐳𝐚𝐫𝐢𝐁𝐨𝐭 〕━━┓
+┏━━〔 🤖 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★ 〕━━┓
 ┃ 🚀 Ping     : ${ping} ms
 ┃ ⏱️ Uptime   : ${uptimeFormatted}
 ┃ 🔖 Version  : v${process.env.VERSION || '1.0.0'}

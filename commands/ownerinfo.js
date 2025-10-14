@@ -10,19 +10,18 @@ module.exports = {
         try {
             const ownerInfo = `
 ┏━━〔 👑 𝐁𝐨𝐭 𝐎𝐰𝐧𝐞𝐫 〕━━┓
-┃ 📛 Name     : ZOXER & MAZARI
-┃ 📱 Number   : +923232391033
-┃ 🤖 Bot Name      : MazariBot
+┃ 📛 Name     : 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★
+┃ 📱 Number   : +92 343 7408518
+┃ 🤖 Bot Name      : 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★
 ┃ 🔗 Type     : Mobile-based
 ┃ 📅 Created  : 2025
 ┗━━━━━━━━━━━━━━━━━━━┛
 
 📢 *Official Channels:*
-🔗 [ZOXER Official](https://whatsapp.com/channel/0029VbBRITODzgTGQhZSFT3P)
-🔗 [MAZARI TECH](https://whatsapp.com/channel/0029Vb6GUj8BPzjOWNfnhm1B)
+🔗 [Instagram](https://www.instagram.com/zain.maalik47?utm_source=qr)
 
-📺 *YouTube Channel:*
-🎥 [ZOXER Tech](https://youtube.com/@zoxertech)
+📺 *Social Media:*
+🎥 [Instagram](https://www.instagram.com/zain.maalik47?utm_source=qr)
 
 💡 *About:*
 • Premium Tech Learning Courses

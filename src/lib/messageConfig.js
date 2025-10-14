@@ -29,8 +29,8 @@ module.exports = {
                 forwardingScore: 1,
                 isForwarded: true,
                 forwardedNewsletterMessageInfo: {
-                    newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
-                    newsletterName: 'MAZARI TECH',
+                    newsletterJid: 'instagram@social',
+                    newsletterName: '𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★',
                     serverMessageId: -1
                 }
             }

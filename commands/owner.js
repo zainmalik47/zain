@@ -8,26 +8,24 @@ module.exports = {
 
     async handleCommand(sock, chat, msg, args) {
         try {
-            const ownerInfo = `👑 *MAZARI BOT OWNER INFO* 👑
+            const ownerInfo = `👑 *ZAIN BOT OWNER INFO* 👑
 
 *Owner Names:* 
-• ZOXER (Primary Owner)
-• MAZARI (Primary Owner)
+• 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★ (Primary Owner)
 
 *Owner Number:*
-• ZOXER: +923232391033
+• 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★: +92 343 7408518
 
 *Bot Version:* 2.0.5
 
 *📺 Channels:*
-• ZOXER Official: https://whatsapp.com/channel/0029VbBRITODzgTGQhZSFT3P
-• MAZARI TECH: https://whatsapp.com/channel/0029Vb6GUj8BPzjOWNfnhm1B
+• Instagram: https://www.instagram.com/zain.maalik47?utm_source=qr
 
 *📱 Contact:*
-WhatsApp: +923232391033
+Instagram: @https://www.instagram.com/zain.maalik47?utm_source=qr
 
 *🔗 Social Media:*
-YouTube: @zoxertech
+Instagram: @https://www.instagram.com/zain.maalik47?utm_source=qr
 
 *⚡ Bot Features:*
 • 80+ Commands
@@ -36,8 +34,7 @@ YouTube: @zoxertech
 • Group management tools
 • Media downloader
 • AI integration
-
-*Made with ❤️ by ZOXER & MAZARI*
+*Made with ❤️ by 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★*
 
 *Note: This bot is for educational purposes only.*`;
 

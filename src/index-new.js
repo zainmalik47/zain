@@ -17,7 +17,7 @@ const path = require('path')
 const qrcode = require('qrcode-terminal')
 const readline = require('readline')
 
-console.log('🤖 Starting Mobile-Based MazariBot...')
+console.log('🤖 Starting Mobile-Based ZainBot...')
 console.log('====================================')
 
 // Load configuration
@@ -165,7 +165,7 @@ async function startPairingProcess() {
     } else if (choice === '2') {
         console.log('\n🔑 Pair Code method selected');
         
-        const phoneNumber = await askQuestion('Enter phone number (with country code, e.g., +923232391033): ');
+        const phoneNumber = await askQuestion('Enter phone number (with country code, e.g., +92 343 7408518): ');
         
         if (!phoneNumber || phoneNumber.length < 10) {
             console.log('❌ Invalid phone number. Please try again.');
@@ -214,7 +214,7 @@ async function initializeMobileClient() {
         logger: P({ level: 'silent' }),
         printQRInTerminal: false, // We handle QR ourselves
         auth: state,
-        browser: ['MazariBot', 'Chrome', '1.0.0'],
+        browser: ['ZainBot', 'Chrome', '1.0.0'],
         generateHighQualityLinkPreview: true,
     });
 
@@ -257,7 +257,7 @@ async function initializeMobileClient() {
                 process.exit(1);
             }
         } else if (connection === 'open') {
-            console.log('\n✅ MazariBot is ready and connected!');
+            console.log('\n✅ ZainBot is ready and connected!');
             console.log('=====================================');
             console.log('Bot Configuration:');
             console.log(`- Bot Name: ${config.botName}`);
@@ -278,7 +278,7 @@ async function initializeMobileClient() {
             // Get bot info
             botInfo = {
                 id: sock.user?.id,
-                name: sock.user?.name || 'MazariBot'
+                name: sock.user?.name || 'ZainBot'
             };
             
             console.log('Bot Info:', botInfo);
@@ -491,7 +491,7 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
             case 'ping':
                 return 'Pong! 🏓'
             case 'help':
-                return `*🤖 MazariBot Commands*
+                return `*🤖 ZainBot Commands*
                 
 👑 Owner Commands
   .addowner - Add a new owner to the bot

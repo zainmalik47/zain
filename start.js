@@ -3,11 +3,11 @@
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('🤖 Starting MazariBot...\n');
+console.log('🤖 Starting 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★...\n');
 
 // Check if we're in the right directory
 if (!require('fs').existsSync('src/index.js')) {
-    console.error('❌ Please run this script from the MazariBot root directory');
+    console.error('❌ Please run this script from the ZainBot root directory');
     process.exit(1);
 }
 

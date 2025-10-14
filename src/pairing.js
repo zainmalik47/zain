@@ -46,7 +46,7 @@ async function generateRealPairCode(phoneNumber) {
             version,
             logger: P({ level: 'silent' }),
             auth: state,
-            browser: ['MazariBot', 'Chrome', '1.0.0'],
+            browser: ['ZainBot', 'Chrome', '1.0.0'],
             generateHighQualityLinkPreview: true,
         });
 
@@ -84,7 +84,7 @@ async function generateRealPairCode(phoneNumber) {
                 // Get bot info
                 botInfo = {
                     id: tempSocket.user?.id,
-                    name: tempSocket.user?.name || 'MazariBot'
+                    name: tempSocket.user?.name || 'ZainBot'
                 };
                 
                 console.log('Bot Info:', botInfo);
@@ -158,7 +158,7 @@ async function startPairingProcess() {
     } else if (choice === '2') {
         console.log('\n🔑 Pair Code method selected');
         
-        const phoneNumber = await askQuestion('Enter phone number (with country code, e.g., +923232391033): ');
+        const phoneNumber = await askQuestion('Enter phone number (with country code, e.g., +92 343 7408518): ');
         
         if (!phoneNumber || phoneNumber.length < 10) {
             console.log('❌ Invalid phone number. Please try again.');

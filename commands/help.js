@@ -8,8 +8,8 @@ const channelInfo = {
         forwardingScore: 1,
         isForwarded: true,
         forwardedNewsletterMessageInfo: {
-            newsletterJid: '0029Vb6GUj8BPzjOWNfnhm1B@newsletter',
-            newsletterName: 'MAZARI TECH',
+            newsletterJid: 'instagram@social',
+            newsletterName: '𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★',
             serverMessageId: -1
         }
     }
@@ -213,7 +213,7 @@ module.exports = {
 ║ ➤ .repo
 ╚═══════════════════╝
 
-Join our channel for updates: https://whatsapp.com/channel/0029Vb6GUj8BPzjOWNfnhm1B`;
+Follow us on Instagram: https://www.instagram.com/zain.maalik47?utm_source=qr`;
 
             const imagePath = path.join(__dirname, '../assets/bot_image.jpg');
             

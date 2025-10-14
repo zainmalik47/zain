@@ -151,7 +151,7 @@ async function startPairFlow() {
 
   // create client with chosen auth dir
   client = new Client({
-    authStrategy: new LocalAuth({ clientId: 'mazaribot', dataPath: chosenAuthDir }),
+    authStrategy: new LocalAuth({ clientId: 'zainbot', dataPath: chosenAuthDir }),
     puppeteer: { 
       headless: true,
       args: [

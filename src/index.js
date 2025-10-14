@@ -1,8 +1,3 @@
-/**
- * MazariBot - A WhatsApp Bot
- * Copyright (c) 2024 ZOXER & MAZARI
- * MIT License
- */
 
 require('./settings')
 const { Boom } = require('@hapi/boom')
@@ -90,24 +85,69 @@ store.writeToFile = (filePath = STORE_FILE) => {
 store.readFromFile(STORE_FILE)
 setInterval(() => store.writeToFile(STORE_FILE), 10_000)
 
-// ==== PROMPT UTILS (local/dev only) ==== 
+// ==== PROMPT UTILS (Termux compatible) ==== 
 function askQuestion(text) {
-  if (!process.stdin.isTTY) return Promise.reject(new Error('Non-interactive terminal'))
+  // Check if we're in Termux or have TTY
+  if (!process.stdin.isTTY && !process.env.TERMUX_VERSION) {
+    return Promise.reject(new Error('Non-interactive terminal'))
+  }
+  
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
-    terminal: true
+    terminal: true,
+    historySize: 0
   })
-  return new Promise(resolve => rl.question(text, ans => {
-    rl.close()
-    resolve(ans)
-  }))
+  
+  return new Promise((resolve) => {
+    rl.question(text, (answer) => {
+      rl.close()
+      resolve(answer.trim())
+    })
+    
+    // Add timeout for Termux compatibility
+    setTimeout(() => {
+      if (!rl.closed) {
+        rl.close()
+        resolve('')
+      }
+    }, 30000) // 30 second timeout
+  })
 }
 
 // ==== GLOBAL FLAGS ==== 
 let reconnectAttempts = 0
 let restarting = false
 let messageCount = 0
+
+// ==== STATUS MESSAGE HANDLER ====
+async function handleStatusMessage(sock, messageUpdate) {
+  try {
+    const msg = messageUpdate.messages[0]
+    if (!msg || !msg.key) return
+    
+    const statusJid = msg.key.remoteJid
+    const participant = msg.key.participant || statusJid
+    
+    console.log(`📱 STATUS UPDATE from ${participant}`)
+    
+    // Auto-view status if autostatus is enabled
+    if (autoStatusSeen) {
+      try {
+        // Mark status as read
+        await sock.readMessages([msg.key])
+        console.log(`✅ Auto-viewed status from ${participant}`)
+      } catch (error) {
+        console.error('❌ Error viewing status:', error.message)
+      }
+    }
+    
+    // Don't process status messages as commands
+    return
+  } catch (error) {
+    console.error('❌ Error handling status message:', error)
+  }
+}
 
 // ==== MESSAGE HANDLER ====
 async function handleMessages(sock, messageUpdate, isFromMe = false) {
@@ -164,13 +204,23 @@ async function handleMessages(sock, messageUpdate, isFromMe = false) {
       }
     }
 
-    // Auto reply feature
-    if (config.autoReply && !isFromMeMsg && !isGroup) {
+    // Auto reply feature - reload config to get latest settings
+    let currentConfig = config;
+    try {
+      const configPath = path.join(__dirname, 'config.json');
+      if (fs.existsSync(configPath)) {
+        currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      }
+    } catch (e) {
+      console.error('Error reloading config:', e);
+    }
+    
+    if (currentConfig.autoReply && !isFromMeMsg && !isGroup) {
       try {
-        await sock.sendMessage(senderJid, { text: config.welcomeMessage })
-        console.log(`💬 Auto-reply sent`)
+        await sock.sendMessage(senderJid, { text: currentConfig.welcomeMessage })
+        console.log(`💬 Auto-reply sent: "${currentConfig.welcomeMessage.substring(0, 50)}..."`)
       } catch (e) {
-        console.error('Error sending welcome message:', e)
+        console.error('Error sending auto-reply message:', e)
       }
     }
 
@@ -221,6 +271,7 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
       try {
         console.log(`Loading external command: ${commandPath}`)
         
+        // Clear require cache to ensure fresh command loading
         delete require.cache[require.resolve(commandPath)]
         
         const commandModule = require(commandPath)
@@ -233,8 +284,13 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
         const mockMsg = {
           ...msg,
           reply: async (text) => {
-            await sock.sendMessage(senderJid, { text })
-            return { success: true }
+            try {
+              await sock.sendMessage(senderJid, { text })
+              return { success: true }
+            } catch (error) {
+              console.error('Error in mockMsg.reply:', error.message)
+              throw error
+            }
           },
           getContact: async () => ({
             id: { _serialized: senderJid },
@@ -247,6 +303,8 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
         let result
         console.log(`Command module keys: ${Object.keys(commandModule)}`)
         
+        // Try different command execution methods with better error handling
+        try {
           if (commandModule.handleCommand) {
             console.log('Using handleCommand function')
             result = await commandModule.handleCommand(sock, mockChat, mockMsg, args)
@@ -268,20 +326,24 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
               console.log(`🔄 Auto-typing status updated: ${autoTyping ? 'Enabled' : 'Disabled'}`)
             }
           } else if (commandModule.info && commandModule.info.name) {
-          console.log('Using info.handleCommand function')
-          result = await commandModule.handleCommand(sock, mockChat, mockMsg, args)
-        } else if (commandModule[commandName]) {
-          console.log(`Using ${commandName} function`)
-          result = await commandModule[commandName](sock, mockChat, mockMsg, args)
-        } else if (commandModule.default) {
-          console.log('Using default function')
-          result = await commandModule.default(sock, mockChat, mockMsg, args)
-        } else if (typeof commandModule === 'function') {
-          console.log('Using direct function export')
-          result = await commandModule(sock, mockChat, mockMsg, args)
-        } else {
-          console.log('No valid command handler found, using fallback')
-          return `✅ ${commandName} command received! (External command not fully compatible yet)`
+            console.log('Using info.handleCommand function')
+            result = await commandModule.handleCommand(sock, mockChat, mockMsg, args)
+          } else if (commandModule[commandName]) {
+            console.log(`Using ${commandName} function`)
+            result = await commandModule[commandName](sock, mockChat, mockMsg, args)
+          } else if (commandModule.default) {
+            console.log('Using default function')
+            result = await commandModule.default(sock, mockChat, mockMsg, args)
+          } else if (typeof commandModule === 'function') {
+            console.log('Using direct function export')
+            result = await commandModule(sock, mockChat, mockMsg, args)
+          } else {
+            console.log('No valid command handler found, using fallback')
+            return `✅ ${commandName} command received! (External command not fully compatible yet)`
+          }
+        } catch (commandError) {
+          console.error(`❌ Error executing command ${commandName}:`, commandError.message)
+          return `❌ Error executing ${commandName}: ${commandError.message}`
         }
         
         if (result && result.message) {
@@ -302,7 +364,7 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
       case 'ping':
         return 'Pong! 🏓'
       case 'help':
-        return `*🤖 MazariBot Commands*
+        return `*🤖 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★ Commands*
         
 👑 Owner Commands
   *.addowner* - Add a new owner to the bot
@@ -450,35 +512,43 @@ async function initializeBot(sock) {
 
     sock.ev.on('messages.upsert', async (messageUpdate) => {
       try {
+        // Check if this is a status message
+        const msg = messageUpdate.messages[0]
+        if (msg && msg.key && msg.key.remoteJid === 'status@broadcast') {
+          // Handle status message separately
+          await handleStatusMessage(sock, messageUpdate)
+          return
+        }
+        
         await handleMessages(sock, messageUpdate, true)
       } catch (error) {
         console.error('❌ Error handling message:', error)
       }
     })
 
-    // Auto-status feature - periodically check for status updates
+    // Auto-status feature - listen for status updates in real-time
     if (autoStatusSeen) {
-      setInterval(async () => {
+      console.log('✅ Auto-status viewing is ENABLED')
+      
+      // Listen for contacts updates (backup method)
+      sock.ev.on('contacts.update', async (updates) => {
         try {
-          // Listen for status updates
-          sock.ev.on('contacts.update', async (updates) => {
-            for (const update of updates) {
-              if (update.status) {
-                console.log(`📱 Status update from ${update.id}: ${update.status}`)
-                // Auto-view the status
-                try {
-                  await sock.sendReadReceipt(update.id)
-                  console.log(`📱 Auto-viewed status from ${update.id}`)
-                } catch (e) {
-                  console.error('Error viewing status:', e)
-                }
+          for (const update of updates) {
+            if (update.status) {
+              console.log(`📱 Status update from ${update.id}: ${update.status}`)
+              // Try to auto-view the status
+              try {
+                await sock.sendReadReceipt(update.id)
+                console.log(`✅ Auto-viewed status from ${update.id}`)
+              } catch (e) {
+                console.error('Error viewing status:', e)
               }
             }
-          })
+          }
         } catch (error) {
-          console.error('Error auto-viewing status:', error)
+          console.error('❌ Error in contacts.update:', error)
         }
-      }, 30000) // Check every 30 seconds
+      })
     }
 
     // Initialize auto-typing if enabled
@@ -495,7 +565,7 @@ async function initializeBot(sock) {
 
 async function startBot() {
   try {
-    console.log('🚀 Starting MazariBot...')
+    console.log('🚀 Starting 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★...')
 
     const { version } = await fetchLatestBaileysVersion()
     const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR)
@@ -525,13 +595,63 @@ async function startBot() {
         if (PHONE_NUMBER) {
           const num = PHONE_NUMBER.replace(/[^0-9]/g, '')
           console.log(`📞 Using PHONE_NUMBER env var to request a pairing code for ${num}`)
+          
+          if (!num || num.length < 10) {
+            console.error('❌ Invalid PHONE_NUMBER format in environment variable.')
+        return
+      }
+
           try {
-            let code = await sock.requestPairingCode(num)
-            code = code?.match(/.{1,4}/g)?.join('-') || code
-            console.log(`\n🔐 Pairing Code: ${code}`)
-            console.log('📱 WhatsApp → Settings → Linked Devices → Link with phone number')
+            let code
+            let attempts = 0
+            const maxAttempts = 5 // Increased for Termux
+            
+            while (attempts < maxAttempts) {
+              attempts++
+              console.log(`🔄 Attempt ${attempts}/${maxAttempts}...`)
+              
+              try {
+                // Add timeout to the pairing code request
+                const pairingPromise = sock.requestPairingCode(num)
+                const timeoutPromise = new Promise((_, reject) => 
+                  setTimeout(() => reject(new Error('Request timeout')), 15000)
+                )
+                
+                code = await Promise.race([pairingPromise, timeoutPromise])
+                if (code) {
+                  console.log(`✅ Pairing code received on attempt ${attempts}`)
+                  break
+                }
+              } catch (attemptErr) {
+                console.log(`⚠️ Attempt ${attempts} failed: ${attemptErr.message}`)
+                if (attempts < maxAttempts) {
+                  console.log('⏳ Waiting 5 seconds before retry...')
+                  await delay(5000)
+                }
+              }
+            }
+            
+            if (code) {
+              code = code?.match(/.{1,4}/g)?.join('-') || code
+              console.log(`\n✅ Pairing Code Generated Successfully!`)
+              console.log(`🔐 Pairing Code: ${code}`)
+              console.log(`\n📱 Instructions:`)
+              console.log(`1. Open WhatsApp on your phone`)
+              console.log(`2. Go to Settings → Linked Devices`)
+              console.log(`3. Tap "Link a Device"`)
+              console.log(`4. Choose "Link with phone number instead"`)
+              console.log(`5. Enter the pairing code: ${code}`)
+              console.log(`\n⏳ Waiting for pairing...`)
+            } else {
+              console.error('❌ Failed to generate pairing code after multiple attempts.')
+              console.log('💡 Check your internet connection and try again.')
+            }
           } catch (err) {
             console.error('❌ Failed to request pairing code:', err?.message || err)
+            console.log('💡 Common solutions:')
+            console.log('   - Check your internet connection')
+            console.log('   - Verify the PHONE_NUMBER environment variable')
+            console.log('   - Wait a few minutes and try again')
           }
         }
       } else {
@@ -548,15 +668,87 @@ async function startBot() {
           })
         } else if (choice === '2') {
           console.log('📱 Pairing Code mode selected.')
-          const pn = await askQuestion('\n📞 Enter your WhatsApp number (e.g., 923232391033): ')
-          const cleanPn = pn.replace(/[^0-9]/g, '')
+          
+          let pn
           try {
-            let code = await sock.requestPairingCode(cleanPn)
-            code = code?.match(/.{1,4}/g)?.join('-') || code
-            console.log(`\n🔐 Pairing Code: ${code}`)
-            console.log('📱 WhatsApp → Settings → Linked Devices → Link with phone number')
+            pn = await askQuestion('\n📞 Enter your WhatsApp number (e.g., 923232391033): ')
+          } catch (error) {
+            console.log('⚠️ Input timeout or error. Switching to QR Code mode...')
+            console.log('📷 QR Code mode activated. Waiting for QR...')
+            sock.ev.on('connection.update', ({ qr }) => {
+              if (qr) qrcode.generate(qr, { small: true })
+            })
+            return
+          }
+          
+          const cleanPn = pn.replace(/[^0-9]/g, '')
+          
+          if (!cleanPn || cleanPn.length < 10) {
+            console.error('❌ Invalid phone number format. Please enter a valid WhatsApp number.')
+            console.log('🔄 Switching to QR Code mode...')
+            sock.ev.on('connection.update', ({ qr }) => {
+              if (qr) qrcode.generate(qr, { small: true })
+            })
+            return
+          }
+          
+          console.log(`📞 Requesting pairing code for: ${cleanPn}`)
+          try {
+            // Add timeout and retry logic with better error handling
+            let code
+            let attempts = 0
+            const maxAttempts = 5 // Increased attempts for Termux
+            
+            while (attempts < maxAttempts) {
+              attempts++
+              console.log(`🔄 Attempt ${attempts}/${maxAttempts}...`)
+              
+              try {
+                // Add timeout to the pairing code request
+                const pairingPromise = sock.requestPairingCode(cleanPn)
+                const timeoutPromise = new Promise((_, reject) => 
+                  setTimeout(() => reject(new Error('Request timeout')), 15000)
+                )
+                
+                code = await Promise.race([pairingPromise, timeoutPromise])
+                if (code) {
+                  console.log(`✅ Pairing code received on attempt ${attempts}`)
+                  break
+                }
+              } catch (attemptErr) {
+                console.log(`⚠️ Attempt ${attempts} failed: ${attemptErr.message}`)
+                if (attempts < maxAttempts) {
+                  console.log('⏳ Waiting 5 seconds before retry...')
+                  await delay(5000) // Increased delay for Termux
+                }
+              }
+            }
+            
+            if (code) {
+              code = code?.match(/.{1,4}/g)?.join('-') || code
+              console.log(`\n✅ Pairing Code Generated Successfully!`)
+              console.log(`🔐 Pairing Code: ${code}`)
+              console.log(`\n📱 Instructions:`)
+              console.log(`1. Open WhatsApp on your phone`)
+              console.log(`2. Go to Settings → Linked Devices`)
+              console.log(`3. Tap "Link a Device"`)
+              console.log(`4. Choose "Link with phone number instead"`)
+              console.log(`5. Enter the pairing code: ${code}`)
+              console.log(`\n⏳ Waiting for pairing...`)
+              console.log(`💡 If pairing fails, restart bot and try QR Code method`)
+            } else {
+              console.error('❌ Failed to generate pairing code after multiple attempts.')
+              console.log('🔄 Switching to QR Code mode...')
+              sock.ev.on('connection.update', ({ qr }) => {
+                if (qr) qrcode.generate(qr, { small: true })
+              })
+            }
           } catch (err) {
             console.error('❌ Failed to get pairing code:', err?.message || err)
+            console.log('🔄 Switching to QR Code mode...')
+            sock.ev.on('connection.update', ({ qr }) => {
+              if (qr) qrcode.generate(qr, { small: true })
+            })
           }
         } else {
           console.log('❌ Invalid choice.')
@@ -568,7 +760,7 @@ async function startBot() {
     sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
       const status = new Boom(lastDisconnect?.error)?.output?.statusCode
       if (connection === 'open') {
-        console.log('✅ MazariBot connected successfully!')
+        console.log('✅ 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★ connected successfully!')
         console.log('=====================================')
         console.log(`Bot Configuration:`)
         console.log(`- Bot Name: ${config.botName}`)
@@ -595,17 +787,43 @@ async function startBot() {
         
         reconnectAttempts = 0
 
+        // Wait a bit for connection to stabilize before sending test message
+        await delay(2000)
+
         try {
           const botJid = sock.user.id
           if (botJid) {
             await sock.sendMessage(botJid, {
-              text: '🤖 MazariBot is now ONLINE!\n✅ Ready to receive messages.\nUse `.help` for commands.'
+              text: '🤖 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★ is now ONLINE!\n✅ Ready to receive messages.\nUse `.help` for commands.'
             })
             console.log('📱 Connection status message sent')
           }
-        } catch {}
+        } catch (error) {
+          console.log('⚠️ Could not send status message:', error.message)
+        }
 
-        await initializeBot(sock)
+        // Initialize bot features after connection is stable
+        try {
+          await initializeBot(sock)
+          console.log('✅ Bot features initialized successfully')
+        } catch (error) {
+          console.error('❌ Error initializing bot features:', error)
+        }
+        
+        // Test command execution capability
+        setTimeout(async () => {
+          try {
+            console.log('🧪 Testing command execution...')
+            const testResponse = await executeCommand('ping', [], null, sock.user.id, true)
+            if (testResponse) {
+              console.log('✅ Command execution test passed')
+            } else {
+              console.log('⚠️ Command execution test failed')
+            }
+          } catch (error) {
+            console.error('❌ Command execution test error:', error.message)
+          }
+        }, 5000)
       }
 
       if (connection === 'close') {
@@ -683,3 +901,4 @@ startBot().catch((err) => {
   console.error('❌ Fatal startup error:', err)
   process.exit(1)
 })
+

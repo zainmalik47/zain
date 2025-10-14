@@ -89,7 +89,7 @@ function formatCommandHelp() {
         "👥 Group Commands": ["groupinfo", "tagall", "tag", "warnings", "warn", "topmembers"]
     };
 
-    let helpText = "*MazariBot Command List*\n\n";
+    let helpText = "*𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★ Commands*\n\n";
     
     for (const [category, cmds] of Object.entries(categories)) {
         helpText += `${category}\n`;

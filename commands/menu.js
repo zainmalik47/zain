@@ -10,7 +10,7 @@ module.exports = {
         try {
             const menuText = `
 ╔═══════════════════╗
-🤖 *MAZARI BOT MENU*
+🤖 *ZAIN BOT MENU*
 ╚═══════════════════╝
 
 ┏━━〔 👑 Owner 〕━━┓
@@ -63,7 +63,7 @@ module.exports = {
 ┃ .welcome [on/off] - Welcome msgs
 ┗━━━━━━━━━━━━━━━━━┛
 
-📱 *Owner:* +923232391033
+📱 *Owner:* +92 343 7408518
 🔗 *Channels:* Use .ownerinfo for links
 💡 *Help:* Use .help for detailed info`;
 

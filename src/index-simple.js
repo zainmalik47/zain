@@ -1,6 +1,6 @@
 /**
  * MazariBot - A WhatsApp Bot
- * Copyright (c) 2024 ZOXER & MAZARI
+ * Copyright (c) 2024 𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★
  * MIT License
  */
 
@@ -226,7 +226,7 @@ async function executeCommand(commandName, args, msg, senderJid, isFromMe) {
       case 'ping':
         return 'Pong! 🏓'
       case 'help':
-        return `*🤖 MazariBot Commands*
+        return `*🤖 ZainBot Commands*
         
 👑 Owner Commands
   *.addowner* - Add a new owner to the bot
@@ -364,7 +364,7 @@ async function initializeBot(sock) {
 
 async function startBot() {
   try {
-    console.log('🚀 Starting MazariBot...')
+    console.log('🚀 Starting ZainBot...')
 
     const { version } = await fetchLatestBaileysVersion()
     const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR)
@@ -437,7 +437,7 @@ async function startBot() {
     sock.ev.on('connection.update', async ({ connection, lastDisconnect }) => {
       const status = new Boom(lastDisconnect?.error)?.output?.statusCode
       if (connection === 'open') {
-        console.log('✅ MazariBot connected successfully!')
+        console.log('✅ ZainBot connected successfully!')
         console.log('=====================================')
         console.log(`Bot Configuration:`)
         console.log(`- Bot Name: ${config.botName}`)
@@ -466,7 +466,7 @@ async function startBot() {
           const botJid = sock.user.id
           if (botJid) {
             await sock.sendMessage(botJid, {
-              text: '🤖 MazariBot is now ONLINE!\n✅ Ready to receive messages.\nUse `.help` for commands.'
+              text: '🤖 ZainBot is now ONLINE!\n✅ Ready to receive messages.\nUse `.help` for commands.'
             })
             console.log('📱 Connection status message sent')
           }
