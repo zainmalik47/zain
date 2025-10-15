@@ -594,27 +594,29 @@ async function startBot() {
         // Server mode: use PHONE_NUMBER env var
         if (PHONE_NUMBER) {
           const num = PHONE_NUMBER.replace(/[^0-9]/g, '')
-          console.log(`📞 Using PHONE_NUMBER env var to request a pairing code for ${num}`)
+          console.log(`📞 Using PHONE_NUMBER env var to request a pairing code for +${num}`)
+          console.log('📱 This will send an invite to your WhatsApp number...')
           
           if (!num || num.length < 10) {
             console.error('❌ Invalid PHONE_NUMBER format in environment variable.')
-        return
-      }
+            console.log('💡 Please use format: +923437408518 or 923437408518')
+            return
+          }
 
           try {
             let code
             let attempts = 0
-            const maxAttempts = 5 // Increased for Termux
+            const maxAttempts = 3
             
             while (attempts < maxAttempts) {
               attempts++
-              console.log(`🔄 Attempt ${attempts}/${maxAttempts}...`)
+              console.log(`🔄 Attempt ${attempts}/${maxAttempts} to generate pairing code...`)
               
               try {
                 // Add timeout to the pairing code request
                 const pairingPromise = sock.requestPairingCode(num)
                 const timeoutPromise = new Promise((_, reject) => 
-                  setTimeout(() => reject(new Error('Request timeout')), 15000)
+                  setTimeout(() => reject(new Error('Request timeout')), 20000)
                 )
                 
                 code = await Promise.race([pairingPromise, timeoutPromise])
@@ -625,32 +627,41 @@ async function startBot() {
               } catch (attemptErr) {
                 console.log(`⚠️ Attempt ${attempts} failed: ${attemptErr.message}`)
                 if (attempts < maxAttempts) {
-                  console.log('⏳ Waiting 5 seconds before retry...')
-                  await delay(5000)
+                  console.log('⏳ Waiting 3 seconds before retry...')
+                  await delay(3000)
                 }
               }
             }
             
             if (code) {
-              code = code?.match(/.{1,4}/g)?.join('-') || code
+              // Format the code with dashes for better readability
+              const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code
+              
               console.log(`\n✅ Pairing Code Generated Successfully!`)
-              console.log(`🔐 Pairing Code: ${code}`)
+              console.log(`🔐 Pairing Code: ${formattedCode}`)
               console.log(`\n📱 Instructions:`)
-              console.log(`1. Open WhatsApp on your phone`)
-              console.log(`2. Go to Settings → Linked Devices`)
-              console.log(`3. Tap "Link a Device"`)
-              console.log(`4. Choose "Link with phone number instead"`)
-              console.log(`5. Enter the pairing code: ${code}`)
+              console.log(`1. Check your WhatsApp for an invite message`)
+              console.log(`2. Open WhatsApp on your phone`)
+              console.log(`3. Go to Settings → Linked Devices`)
+              console.log(`4. Tap "Link a Device"`)
+              console.log(`5. Choose "Link with phone number instead"`)
+              console.log(`6. Enter the pairing code: ${formattedCode}`)
               console.log(`\n⏳ Waiting for pairing...`)
+              console.log(`💡 If you don't receive an invite, check your internet connection and try again`)
+              console.log(`💡 The invite should appear in your WhatsApp within 30 seconds`)
             } else {
               console.error('❌ Failed to generate pairing code after multiple attempts.')
+              console.log('💡 This could be due to:')
+              console.log('   - Invalid phone number format in PHONE_NUMBER')
+              console.log('   - Poor internet connection')
+              console.log('   - WhatsApp server issues')
               console.log('💡 Check your internet connection and try again.')
             }
           } catch (err) {
             console.error('❌ Failed to request pairing code:', err?.message || err)
             console.log('💡 Common solutions:')
             console.log('   - Check your internet connection')
-            console.log('   - Verify the PHONE_NUMBER environment variable')
+            console.log('   - Verify the PHONE_NUMBER environment variable format')
             console.log('   - Wait a few minutes and try again')
           }
         }
@@ -671,7 +682,7 @@ async function startBot() {
           
           let pn
           try {
-            pn = await askQuestion('\n📞 Enter your WhatsApp number (e.g., 923232391033): ')
+            pn = await askQuestion('\n📞 Enter your WhatsApp number (e.g., +92 343 7408518): ')
           } catch (error) {
             console.log('⚠️ Input timeout or error. Switching to QR Code mode...')
             console.log('📷 QR Code mode activated. Waiting for QR...')
@@ -681,6 +692,7 @@ async function startBot() {
             return
           }
           
+          // Clean phone number - remove all non-digits
           const cleanPn = pn.replace(/[^0-9]/g, '')
           
           if (!cleanPn || cleanPn.length < 10) {
@@ -692,22 +704,24 @@ async function startBot() {
             return
           }
           
-          console.log(`📞 Requesting pairing code for: ${cleanPn}`)
+          console.log(`📞 Requesting pairing code for: +${cleanPn}`)
+          console.log('📱 This will send an invite to your WhatsApp number...')
+          
           try {
             // Add timeout and retry logic with better error handling
             let code
             let attempts = 0
-            const maxAttempts = 5 // Increased attempts for Termux
+            const maxAttempts = 3
             
             while (attempts < maxAttempts) {
               attempts++
-              console.log(`🔄 Attempt ${attempts}/${maxAttempts}...`)
+              console.log(`🔄 Attempt ${attempts}/${maxAttempts} to generate pairing code...`)
               
               try {
                 // Add timeout to the pairing code request
                 const pairingPromise = sock.requestPairingCode(cleanPn)
                 const timeoutPromise = new Promise((_, reject) => 
-                  setTimeout(() => reject(new Error('Request timeout')), 15000)
+                  setTimeout(() => reject(new Error('Request timeout')), 20000)
                 )
                 
                 code = await Promise.race([pairingPromise, timeoutPromise])
@@ -718,26 +732,34 @@ async function startBot() {
               } catch (attemptErr) {
                 console.log(`⚠️ Attempt ${attempts} failed: ${attemptErr.message}`)
                 if (attempts < maxAttempts) {
-                  console.log('⏳ Waiting 5 seconds before retry...')
-                  await delay(5000) // Increased delay for Termux
+                  console.log('⏳ Waiting 3 seconds before retry...')
+                  await delay(3000)
                 }
               }
             }
             
             if (code) {
-              code = code?.match(/.{1,4}/g)?.join('-') || code
+              // Format the code with dashes for better readability
+              const formattedCode = code?.match(/.{1,4}/g)?.join('-') || code
+              
               console.log(`\n✅ Pairing Code Generated Successfully!`)
-              console.log(`🔐 Pairing Code: ${code}`)
+              console.log(`🔐 Pairing Code: ${formattedCode}`)
               console.log(`\n📱 Instructions:`)
-              console.log(`1. Open WhatsApp on your phone`)
-              console.log(`2. Go to Settings → Linked Devices`)
-              console.log(`3. Tap "Link a Device"`)
-              console.log(`4. Choose "Link with phone number instead"`)
-              console.log(`5. Enter the pairing code: ${code}`)
+              console.log(`1. Check your WhatsApp for an invite message`)
+              console.log(`2. Open WhatsApp on your phone`)
+              console.log(`3. Go to Settings → Linked Devices`)
+              console.log(`4. Tap "Link a Device"`)
+              console.log(`5. Choose "Link with phone number instead"`)
+              console.log(`6. Enter the pairing code: ${formattedCode}`)
               console.log(`\n⏳ Waiting for pairing...`)
-              console.log(`💡 If pairing fails, restart bot and try QR Code method`)
+              console.log(`💡 If you don't receive an invite, check your internet connection and try again`)
+              console.log(`💡 The invite should appear in your WhatsApp within 30 seconds`)
             } else {
               console.error('❌ Failed to generate pairing code after multiple attempts.')
+              console.log('💡 This could be due to:')
+              console.log('   - Invalid phone number format')
+              console.log('   - Poor internet connection')
+              console.log('   - WhatsApp server issues')
               console.log('🔄 Switching to QR Code mode...')
               sock.ev.on('connection.update', ({ qr }) => {
                 if (qr) qrcode.generate(qr, { small: true })
@@ -745,6 +767,10 @@ async function startBot() {
             }
           } catch (err) {
             console.error('❌ Failed to get pairing code:', err?.message || err)
+            console.log('💡 Common solutions:')
+            console.log('   - Check your internet connection')
+            console.log('   - Verify the phone number format (+country code)')
+            console.log('   - Wait a few minutes and try again')
             console.log('🔄 Switching to QR Code mode...')
             sock.ev.on('connection.update', ({ qr }) => {
               if (qr) qrcode.generate(qr, { small: true })

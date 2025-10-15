@@ -46,7 +46,7 @@ async function generateRealPairCode(phoneNumber) {
             version,
             logger: P({ level: 'silent' }),
             auth: state,
-            browser: ['ZainBot', 'Chrome', '1.0.0'],
+            browser: ['𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★', 'Chrome', '1.0.0'],
             generateHighQualityLinkPreview: true,
         });
 
@@ -84,7 +84,7 @@ async function generateRealPairCode(phoneNumber) {
                 // Get bot info
                 botInfo = {
                     id: tempSocket.user?.id,
-                    name: tempSocket.user?.name || 'ZainBot'
+                    name: tempSocket.user?.name || '𝒵𝒜𝐼𝒩 • 𝒳𝒟 ★'
                 };
                 
                 console.log('Bot Info:', botInfo);
@@ -99,28 +99,40 @@ async function generateRealPairCode(phoneNumber) {
         // Try to generate pair code using WhatsApp's official method
         try {
             // This is the official WhatsApp method to generate pair codes
-            const pairCodeResponse = await tempSocket.generatePairingCode(cleanNumber);
+            const pairCodeResponse = await tempSocket.requestPairingCode(cleanNumber);
             
-            if (pairCodeResponse && pairCodeResponse.code) {
-                pairCode = pairCodeResponse.code;
+            if (pairCodeResponse) {
+                pairCode = pairCodeResponse;
                 pairCodeGenerated = true;
+                
+                // Format the code with dashes for better readability
+                const formattedCode = pairCode?.match(/.{1,4}/g)?.join('-') || pairCode;
                 
                 console.log('\n✅ Real Pair Code Generated!');
                 console.log('==============================');
-                console.log(`📱 Phone Number: ${phoneNumber}`);
-                console.log(`🔑 Pair Code: ${pairCode}`);
+                console.log(`📱 Phone Number: +${cleanNumber}`);
+                console.log(`🔑 Pair Code: ${formattedCode}`);
                 console.log('==============================');
                 console.log('\n📲 Instructions:');
                 console.log('1. Check your WhatsApp for an invite message');
-                console.log('2. Enter this pair code in the invite');
-                console.log('3. The bot will connect automatically');
+                console.log('2. Open WhatsApp on your phone');
+                console.log('3. Go to Settings → Linked Devices');
+                console.log('4. Tap "Link a Device"');
+                console.log('5. Choose "Link with phone number instead"');
+                console.log('6. Enter the pair code in the invite');
+                console.log('7. The bot will connect automatically');
                 console.log('==============================');
+                console.log('💡 The invite should appear in your WhatsApp within 30 seconds');
                 
                 return pairCode;
             }
         } catch (error) {
             console.log('\n⚠️ Could not generate official pair code, falling back to QR code...');
             console.log('Error:', error.message);
+            console.log('💡 This could be due to:');
+            console.log('   - Invalid phone number format');
+            console.log('   - Poor internet connection');
+            console.log('   - WhatsApp server issues');
             
             // Fall back to QR code method
             return null;
